@@ -9,5 +9,6 @@ CompileFlags:
     - -g
     - -D
     - RAI__DEBUG
+    - -D
     - RRIFTT_AI_IMPLEMENTATION
 

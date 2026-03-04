@@ -228,6 +228,7 @@ RaiTensor rai_tensor_rmsnorm(RaiArena *arena, RaiTensor t, RaiTensor weight, flo
 RaiTensor rai_tensor_rope(RaiArena *arena, RaiTensor t, int start_idx, float theta_scale);
 RaiTensor rai_tensor_softmax(RaiArena *arena, RaiTensor t);
 RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t);
+RaiTensor rai_tensor_relu(RaiArena *arena, RaiTensor t);
 RaiTensor rai_tensor_scale(RaiArena *arena, RaiTensor t, float scale);
 RaiTensor rai_tensor_copy(RaiArena *arena, RaiTensor t);
 
@@ -246,6 +247,7 @@ RaiBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor
 
 // Single-Arena Gradient Functions
 RaiTensor rai_tensor_silu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
+RaiTensor rai_tensor_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
 RaiTensor rai_tensor_softmax_grad(RaiArena *arena, RaiTensor d_out, RaiTensor probs);
 RaiTensor rai_tensor_scale_grad(RaiArena *arena, RaiTensor d_out, float scale);
 RaiTensor rai_tensor_rope_grad(RaiArena *arena, RaiTensor d_out, unsigned long start_idx, float theta_scale);
@@ -865,6 +867,37 @@ RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_silu(out, t);
+	return out;
+}
+
+static void rai__tensor_relu(RaiTensor out, RaiTensor in)
+{
+	// base case
+	if (out.rank <= 1) {
+		size_t len = out.dims[RAI__TENSOR_MAXRANK - 1];
+		size_t s_out = out.strs[RAI__TENSOR_MAXRANK - 1];
+		size_t s_in = in.strs[RAI__TENSOR_MAXRANK - 1];
+
+		for (size_t i = 0; i < len; ++i) {
+			float val = in.data[i * s_in];
+			out.data[i * s_out] = val > 0.0f ? val : 0.0f;
+		}
+		return;
+	}
+
+	// recursive step
+	size_t current_dim = RAI__TENSOR_MAXRANK - out.rank;
+	size_t loop_count = out.dims[current_dim];
+
+	for (size_t i = 0; i < loop_count; ++i) {
+		rai__tensor_relu(RAI_TENSOR_SUBTENSOR(out, i), RAI_TENSOR_SUBTENSOR(in, i));
+	}
+}
+
+RaiTensor rai_tensor_relu(RaiArena *arena, RaiTensor t)
+{
+	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
+	rai__tensor_relu(out, t);
 	return out;
 }
 
@@ -1764,6 +1797,44 @@ RaiTensor rai_tensor_silu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in)
 {
 	RaiTensor d_in = RAI_TENSOR_ALLOC_LIKE(arena, in);
 	rai__tensor_silu_grad(d_in, d_out, in);
+	return d_in;
+}
+
+static void rai__tensor_relu_grad(RaiTensor d_in, RaiTensor d_out, RaiTensor in)
+{
+	// base case
+	if (d_out.rank <= 1) {
+		size_t idx = RAI__TENSOR_MAXRANK - 1;
+		size_t N = d_out.dims[idx];
+
+		size_t s_din = d_in.strs[idx];
+		size_t s_dout = d_out.strs[idx];
+		size_t s_in = in.strs[idx];
+
+		for (size_t i = 0; i < N; ++i) {
+			float x = in.data[i * s_in];
+			float dy = d_out.data[i * s_dout];
+
+			float local_grad = x > 0.0f ? 1.0f : 0.0f;
+
+			d_in.data[i * s_din] = dy * local_grad;
+		}
+		return;
+	}
+
+	// recursive step
+	size_t outer_idx = RAI__TENSOR_MAXRANK - d_out.rank;
+	size_t outer_dim = d_out.dims[outer_idx];
+
+	for (size_t i = 0; i < outer_dim; ++i) {
+		rai__tensor_relu_grad(RAI_TENSOR_SUBTENSOR(d_in, i), RAI_TENSOR_SUBTENSOR(d_out, i), RAI_TENSOR_SUBTENSOR(in, i));
+	}
+}
+
+RaiTensor rai_tensor_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in)
+{
+	RaiTensor d_in = RAI_TENSOR_ALLOC_LIKE(arena, in);
+	rai__tensor_relu_grad(d_in, d_out, in);
 	return d_in;
 }
 

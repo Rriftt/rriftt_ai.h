@@ -118,9 +118,18 @@ int main() {
 #define RAI_ASSERT(cond) assert(cond)
 #endif // RAI_ASSERT
 
+#ifndef RAI_SQRT1_2F
+#define RAI_SQRT1_2F 0.70710678118654752440f
+#endif // RAI_SQRT1_2F
+
 #ifndef RAI_PIF
 #define RAI_PIF 3.14159265358979323846f
 #endif // RAI_PIF
+
+#ifndef RAI_ERFCF
+#include <math.h>
+#define RAI_ERFCF(x) erfcf(x)
+#endif // RAI_ERFCF
 
 #ifndef RAI_SQRTF
 #include <math.h>
@@ -244,6 +253,7 @@ RaiTensor rai_tensor_rmsnorm(RaiArena *arena, RaiTensor t, RaiTensor weight, flo
 RaiTensor rai_tensor_rope(RaiArena *arena, RaiTensor t, int start_idx, float theta_scale);
 RaiTensor rai_tensor_softmax(RaiArena *arena, RaiTensor t);
 RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t);
+RaiTensor rai_tensor_gelu(RaiArena *arena, RaiTensor t);
 RaiTensor rai_tensor_relu(RaiArena *arena, RaiTensor t);
 RaiTensor rai_tensor_leaky_relu(RaiArena *arena, RaiTensor t, float leak);
 RaiTensor rai_tensor_scale(RaiArena *arena, RaiTensor t, float scale);
@@ -846,6 +856,38 @@ RaiTensor rai_tensor_mul(RaiArena *arena, RaiTensor a, RaiTensor b)
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(mul, a, b, RAI__TENSOR_MAXRANK);
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, a);
 	rai__tensor_mul(out, a, b);
+	return out;
+}
+
+static void rai__tensor_gelu(RaiTensor out, RaiTensor in)
+{
+	// base case
+	if (out.rank <= 1) {
+		size_t len = out.dims[RAI__TENSOR_MAXRANK - 1];
+		size_t s_out = out.strs[RAI__TENSOR_MAXRANK - 1];
+		size_t s_in = in.strs[RAI__TENSOR_MAXRANK - 1];
+
+		for (size_t i = 0; i < len; ++i) {
+			float val = in.data[i * s_in];
+			float phi = 0.5 * RAI_ERFCF(-val * RAI_SQRT1_2F);
+			out.data[i * s_out] = val * phi;
+		}
+		return;
+	}
+
+	// recursive step
+	size_t current_dim = RAI__TENSOR_MAXRANK - out.rank;
+	size_t loop_count = out.dims[current_dim];
+
+	for (size_t i = 0; i < loop_count; ++i) {
+		rai__tensor_gelu(RAI_TENSOR_SUBTENSOR(out, i), RAI_TENSOR_SUBTENSOR(in, i));
+	}
+}
+
+RaiTensor rai_tensor_gelu(RaiArena *arena, RaiTensor t)
+{
+	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
+	rai__tensor_gelu(out, t);
 	return out;
 }
 

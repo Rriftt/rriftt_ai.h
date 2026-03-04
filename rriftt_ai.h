@@ -118,6 +118,10 @@ int main() {
 #define RAI_ASSERT(cond) assert(cond)
 #endif // RAI_ASSERT
 
+#ifndef RAI_PIf
+#define RAI_PIf 3.14159265358979323846f
+#endif // RAI_PIf
+
 #ifndef RAI_SQRTF
 #include <math.h>
 #define RAI_SQRTF(x) sqrtf(x)
@@ -2334,11 +2338,9 @@ float rai_lr_cosine(float step, float warmup_steps, float max_steps, float max_l
 		return min_lr;
 	}
 	// Cosine Decay Phase
-#define RAI_PI 3.1415926535f
 	float decay_ratio = (step - warmup_steps) / (max_steps - warmup_steps);
-	float coeff = 0.5f * (1.0f + RAI_COSF(RAI_PI * decay_ratio));
+	float coeff = 0.5f * (1.0f + RAI_COSF(RAI_PIf * decay_ratio));
 	return min_lr + coeff * (max_lr - min_lr);
-#undef RAI_PI
 }
 
 #endif // RRIFTT_AI_IMPLEMENTATION

@@ -25,8 +25,8 @@ int main(void) {
     // 3. Execute math
     RaiTensor C = rai_tensor_add(&arena, A, B);
 
-    // 4. Verify (Compile with -DRAI__DEBUG to enable printing)
-    // RAI__TENSOR_PRINT(C);
+    // 4. Verify
+    RAI_TENSOR_PRINT(C);
 
     // 5. Vaporize all memory instantly
     rai_arena_destroy(&arena);

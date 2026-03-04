@@ -63,8 +63,8 @@ int main() {
 	// 3. Perform a mathematical operation
 	RaiTensor C = rai_tensor_add(&arena, A, B);
 
-	// 4. Print the result (if compiled with RAI__DEBUG)
-	// RAI__TENSOR_PRINT(C);
+	// 4. Print the result
+	RAI_TENSOR_PRINT(C);
 
 	// 5. Free all memory instantly
 	rai_arena_destroy(&arena);
@@ -87,6 +87,11 @@ int main() {
 
 #include <stddef.h>
 #include <stdint.h>
+
+#ifndef RAI_PRINTF
+#include <stdio.h>
+#define RAI_PRINTF(fmt, ...) printf(fmt, __VA_ARGS__)
+#endif // RAI_PRINTF
 
 #ifndef RAI_MALLOC
 #include <stdlib.h>
@@ -190,6 +195,9 @@ typedef struct {
 
 // Tensor functions
 // ------------------------- For Internal Use ---------------------------
+// Loggers
+void rai__tensor_print(RaiTensor t, int indent);
+
 // Allocators
 RaiTensor rai__tensor_alloc(RaiArena *arena, size_t rank, size_t dims[rank + 1]);
 RaiTensor rai__tensor_alloc_randn(RaiArena *arena, float mean, float std_dev, size_t rank, size_t dims[rank + 1]);
@@ -204,6 +212,10 @@ RaiTensor rai__tensor_subtensor(RaiTensor t, size_t idxs_len, size_t idxs[idxs_l
 #define RAI__NULL_TERMINATED_ARRAY_LEN(...) (RAI__ARRAY_LEN(RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__)) - 1)
 
 // ------------------------- For External Use ----------------------------
+// Loggers
+void rai_tensor_info(RaiTensor t);
+#define RAI_TENSOR_PRINT(t) rai__tensor_print(t, 0)
+
 // Allocators
 #define RAI_TENSOR_ALLOC(arena, ...) rai__tensor_alloc(arena, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 #define RAI_TENSOR_ALLOC_LIKE(arena, t) rai__tensor_alloc(arena, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
@@ -482,17 +494,16 @@ RaiString rai_tokenizer_decode(
 
 #endif // RRIFTT_AI_H
 
-#ifdef RAI__DEBUG
-#include <stdio.h>
+#ifdef RRIFTT_AI_IMPLEMENTATION
 
-void rai__tensor_info(RaiTensor t)
+void rai_tensor_info(RaiTensor t)
 {
-	printf("rank = %zu\n", t.rank);
+	RAI_PRINTF("rank = %zu\n", t.rank);
 	for (size_t i = 0; i < RAI__TENSOR_MAXRANK; ++i) {
-		printf("dims[%zu] = %zu, strs[%zu] = %zu\n", i, t.dims[i], i, t.strs[i]);
+		RAI_PRINTF("dims[%zu] = %zu, strs[%zu] = %zu\n", i, t.dims[i], i, t.strs[i]);
 	}
-	printf("data = %p\n", (void *)t.data);
-	printf("count = %zu\n", t.count);
+	RAI_PRINTF("data = %p\n", (void *)t.data);
+	RAI_PRINTF("count = %zu\n", t.count);
 }
 
 void rai__tensor_print(RaiTensor t, int indent)
@@ -502,22 +513,16 @@ void rai__tensor_print(RaiTensor t, int indent)
 
 	// Scalar
 	if (scalar) {
-		printf("%5.2f  %s", t.data[0], indent == 0 ? "\n" : "");
+		RAI_PRINTF("%5.2f  %s", t.data[0], indent == 0 ? "\n" : "");
 		return;
 	}
 
-	printf("%*s[%s", indent, "", vector ? "  " : "\n");
+	RAI_PRINTF("%*s[%s", indent, "", vector ? "  " : "\n");
 	for (size_t i = 0; i < t.dims[RAI__TENSOR_MAXRANK - t.rank]; ++i) {
 		rai__tensor_print(RAI_TENSOR_SUBTENSOR(t, i), indent + 4);
 	}
-	printf("%*s]\n", vector ? 0 : indent, "");
+	RAI_PRINTF("%*s]\n", vector ? 0 : indent, "");
 }
-
-#define RAI__TENSOR_PRINT(t) rai__tensor_print(t, 0)
-
-#endif // RAI__DEBUG
-
-#ifdef RRIFTT_AI_IMPLEMENTATION
 
 float rai_randn(float mean, float std_dev)
 {

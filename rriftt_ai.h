@@ -749,7 +749,7 @@ RaiTensor rai_tensor_transpose(RaiTensor t, size_t axis_a, size_t axis_b)
 				RAI_ASSERT(0 && #NAME " Dimension mismatch"); \
 			}                                                     \
 		}                                                             \
-	} while (0)
+	} while (false)
 
 static void rai__tensor_add(RaiTensor out, RaiTensor a, RaiTensor b)
 {

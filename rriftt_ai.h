@@ -280,6 +280,29 @@ RaiTensor rai_tensor_softmax_grad(RaiArena *arena, RaiTensor d_out, RaiTensor pr
 RaiTensor rai_tensor_scale_grad(RaiArena *arena, RaiTensor d_out, float scale);
 RaiTensor rai_tensor_rope_grad(RaiArena *arena, RaiTensor d_out, unsigned long start_idx, float theta_scale);
 
+// ------------------------- MLP API ---------------------------------
+typedef struct {
+	RaiTensor weight;
+	RaiTensor bias;
+} RaiMlpLayer;
+
+RaiMlpLayer rai_mlp_layer_alloc_randn(RaiArena* arena, size_t num_inputs, size_t num_outputs);
+
+typedef struct {
+	RaiTensor prod;
+	RaiTensor sum;
+	RaiTensor out;
+} RaiMlpLayerActs;
+
+RaiMlpLayerActs rai_mlp_layer_forward(RaiArena* arena, RaiMlpLayer layer, RaiTensor in);
+
+typedef struct {
+	RaiTensor d_weight;
+	RaiTensor d_bias;
+} RaiMlpLayerGrad;
+
+
+// ------------------------- LLM API ---------------------------------
 // Model Configuration
 typedef struct {
 	size_t vocab_size;	     // V
@@ -2395,6 +2418,45 @@ float rai_lr_cosine(float step, float warmup_steps, float max_steps, float max_l
 	float decay_ratio = (step - warmup_steps) / (max_steps - warmup_steps);
 	float coeff = 0.5f * (1.0f + RAI_COSF(RAI_PIF * decay_ratio));
 	return min_lr + coeff * (max_lr - min_lr);
+}
+
+RaiMlpLayer rai_mlp_layer_alloc_randn(RaiArena* arena, size_t num_inputs, size_t num_outputs) {
+	RaiMlpLayer layer = { 0 };
+
+	float std_dev = 1.0f / RAI_SQRTF((float)num_inputs);
+	layer.weight = RAI_TENSOR_ALLOC_RANDN(arena, 0.0f, std_dev, num_outputs, num_inputs);
+	layer.bias   = RAI_TENSOR_ALLOC_RANDN(arena, 0.0f, std_dev, num_outputs);
+
+	return layer;
+}
+
+RaiMlpLayerActs rai_mlp_layer_forward(RaiArena* arena, RaiMlpLayer layer, RaiTensor in) {
+	RaiMlpLayerActs acts = { 0 };
+	acts.prod = rai_tensor_matmul_t(arena, in, layer.weight);
+	acts.sum = rai_tensor_add(arena, acts.prod, layer.bias);
+	acts.out = rai_tensor_silu(arena, acts.sum);
+
+	return acts;
+}
+
+RaiMlpLayerGrad rai_mlp_layer_backward(
+	RaiArena* arena,
+	RaiArena* scratch,
+	RaiMlpLayer layer,
+	RaiMlpLayerActs acts,
+	RaiTensor d_out,
+	RaiTensor in
+) {
+	RaiMlpLayerGrad grad = { 0 };
+
+	RaiTensor d_sum = rai_tensor_silu_grad(scratch, d_out, acts.sum);
+	RaiBinOpGrad g_sum = rai_tensor_add_grad(scratch, arena, d_sum, acts.prod, layer.bias);
+	RaiTensor d_prod = g_sum.d_a;
+	grad.d_bias = g_sum.d_b;
+	RaiBinOpGrad g_prod = rai_tensor_matmul_t_grad(scratch, arena, d_prod, in, layer.weight);
+	grad.d_weight = g_prod.d_b;
+
+	return grad;
 }
 
 #endif // RRIFTT_AI_IMPLEMENTATION

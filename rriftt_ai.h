@@ -289,35 +289,34 @@ RaiTensor rai_tensor_mul(RaiArena *arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_matmul_t(RaiArena *arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_rmsnorm(RaiArena *arena, RaiTensor t, RaiTensor weight, float eps);
 
-// Unary Operations
-RaiTensor rai_tensor_rope(RaiArena *arena, RaiTensor t, int start_idx, float theta_scale);
-RaiTensor rai_tensor_softmax(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_gelu(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_relu(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_leaky_relu(RaiArena *arena, RaiTensor t, float leak);
-RaiTensor rai_tensor_scale(RaiArena *arena, RaiTensor t, float scale);
-RaiTensor rai_tensor_copy(RaiArena *arena, RaiTensor t);
-
-// Gradient Operations
+// Binary Operations Gradients
 typedef struct {
 	RaiTensor d_a;
 	RaiTensor d_b;
 } RaiTensorBinOpGrad;
 
-// Dual-Arena Gradient Functions
-RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps);
 RaiTensorBinOpGrad rai_tensor_add_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
 RaiTensorBinOpGrad rai_tensor_sub_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
 RaiTensorBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps);
 
-// Single-Arena Gradient Functions
-RaiTensor rai_tensor_silu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
+// Unary Operations
+RaiTensor rai_tensor_copy(RaiArena *arena, RaiTensor t);
+RaiTensor rai_tensor_scale(RaiArena *arena, RaiTensor t, float scale);
+RaiTensor rai_tensor_relu(RaiArena *arena, RaiTensor t);
+RaiTensor rai_tensor_leaky_relu(RaiArena *arena, RaiTensor t, float leak);
+RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t);
+RaiTensor rai_tensor_gelu(RaiArena *arena, RaiTensor t);
+RaiTensor rai_tensor_softmax(RaiArena *arena, RaiTensor t);
+RaiTensor rai_tensor_rope(RaiArena *arena, RaiTensor t, int start_idx, float theta_scale);
+
+// Unary Operations Gradients
+RaiTensor rai_tensor_scale_grad(RaiArena *arena, RaiTensor d_out, float scale);
 RaiTensor rai_tensor_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
 RaiTensor rai_tensor_leaky_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in, float leak);
+RaiTensor rai_tensor_silu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
 RaiTensor rai_tensor_softmax_grad(RaiArena *arena, RaiTensor d_out, RaiTensor probs);
-RaiTensor rai_tensor_scale_grad(RaiArena *arena, RaiTensor d_out, float scale);
 RaiTensor rai_tensor_rope_grad(RaiArena *arena, RaiTensor d_out, unsigned long start_idx, float theta_scale);
 
 // ------------------------- MLP API ---------------------------------

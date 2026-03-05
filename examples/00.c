@@ -1,5 +1,4 @@
 #define RRIFTT_AI_IMPLEMENTATION
-#define RAI__DEBUG
 #include "../rriftt_ai.h"
 
 float mse(RaiTensor preds, RaiTensor targets)
@@ -54,9 +53,11 @@ int main()
 	Y.data[4] = 0.0f, Y.data[5] = 1.0f;
 	Y.data[6] = 0.0f, Y.data[7] = 1.0f;
 
-	// Standard Normal Distribution
+	// Normal Distribution
 	float mean = 0.0f;
 	float std_dev = 1.0f;
+
+	// Hyperparams
 	float eta = 0.1;
 	size_t max_steps = 10000;
 

@@ -340,6 +340,14 @@ typedef struct {
 	RaiTensor d_bias;
 } RaiMlpLayerGrad;
 
+RaiMlpLayerGrad rai_mlp_layer_backward(
+	RaiArena* arena,
+	RaiArena* scratch,
+	RaiMlpLayer layer,
+	RaiMlpLayerActs acts,
+	RaiTensor d_out,
+	RaiTensor in
+);
 
 // ------------------------- LLM API ---------------------------------
 // Model Configuration
@@ -2499,5 +2507,4 @@ RaiMlpLayerGrad rai_mlp_layer_backward(
 }
 
 #endif // RRIFTT_AI_IMPLEMENTATION
-
 

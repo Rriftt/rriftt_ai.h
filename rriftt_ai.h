@@ -229,13 +229,13 @@ float rai_randn(float mean, float std_dev);
 typedef struct {
 	size_t alloced_bytes;
 	size_t capacity_bytes;
-	void *memory_begin;
+	void* memory_begin;
 } RaiArena;
 
 RaiArena rai_arena_create(size_t capacity_bytes);
-void rai_arena_destroy(RaiArena *arena);
-void *rai_arena_alloc(RaiArena *arena, size_t size_bytes);
-void rai_arena_clear(RaiArena *arena);
+void rai_arena_destroy(RaiArena* arena);
+void* rai_arena_alloc(RaiArena* arena, size_t size_bytes);
+void rai_arena_clear(RaiArena* arena);
 
 // ------------------------- Tensor API ---------------------------------
 // Tensors - The Atoms of Deep Learning
@@ -245,7 +245,7 @@ typedef struct {
 	size_t dims[RAI__TENSOR_MAXRANK];
 	size_t strs[RAI__TENSOR_MAXRANK];
 	size_t count;
-	float *data;
+	float* data;
 } RaiTensor;
 
 // Tensor functions
@@ -253,9 +253,9 @@ typedef struct {
 void rai__tensor_print(RaiTensor t, int indent);
 
 // Allocators
-RaiTensor rai__tensor_alloc(RaiArena *arena, size_t rank, size_t dims[rank + 1]);
-RaiTensor rai__tensor_alloc_randn(RaiArena *arena, float mean, float std_dev, size_t rank, size_t dims[rank + 1]);
-RaiTensor rai__tensor_alloc_fill(RaiArena *arena, float fill, size_t rank, size_t dims[rank + 1]);
+RaiTensor rai__tensor_alloc(RaiArena* arena, size_t rank, size_t dims[rank + 1]);
+RaiTensor rai__tensor_alloc_randn(RaiArena* arena, float mean, float std_dev, size_t rank, size_t dims[rank + 1]);
+RaiTensor rai__tensor_alloc_fill(RaiArena* arena, float fill, size_t rank, size_t dims[rank + 1]);
 
 // View Operations
 RaiTensor rai__tensor_reshape(RaiTensor t, size_t new_rank, size_t new_dims[new_rank + 1]);
@@ -283,11 +283,11 @@ void rai_tensor_info(RaiTensor t);
 RaiTensor rai_tensor_transpose(RaiTensor t, size_t axis_a, size_t axis_b);
 
 // Binary Operations
-RaiTensor rai_tensor_add(RaiArena *arena, RaiTensor a, RaiTensor b);
-RaiTensor rai_tensor_sub(RaiArena *arena, RaiTensor a, RaiTensor b);
-RaiTensor rai_tensor_mul(RaiArena *arena, RaiTensor a, RaiTensor b);
-RaiTensor rai_tensor_matmul_t(RaiArena *arena, RaiTensor a, RaiTensor b);
-RaiTensor rai_tensor_rmsnorm(RaiArena *arena, RaiTensor t, RaiTensor weight, float eps);
+RaiTensor rai_tensor_add(RaiArena* arena, RaiTensor a, RaiTensor b);
+RaiTensor rai_tensor_sub(RaiArena* arena, RaiTensor a, RaiTensor b);
+RaiTensor rai_tensor_mul(RaiArena* arena, RaiTensor a, RaiTensor b);
+RaiTensor rai_tensor_matmul_t(RaiArena* arena, RaiTensor a, RaiTensor b);
+RaiTensor rai_tensor_rmsnorm(RaiArena* arena, RaiTensor t, RaiTensor weight, float eps);
 
 // Binary Operations Gradients
 typedef struct {
@@ -295,29 +295,29 @@ typedef struct {
 	RaiTensor d_b;
 } RaiTensorBinOpGrad;
 
-RaiTensorBinOpGrad rai_tensor_add_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiTensorBinOpGrad rai_tensor_sub_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiTensorBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps);
+RaiTensorBinOpGrad rai_tensor_add_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_sub_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_mul_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena* arena_in, RaiArena* arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps);
 
 // Unary Operations
-RaiTensor rai_tensor_copy(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_scale(RaiArena *arena, RaiTensor t, float scale);
-RaiTensor rai_tensor_relu(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_leaky_relu(RaiArena *arena, RaiTensor t, float leak);
-RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_gelu(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_softmax(RaiArena *arena, RaiTensor t);
-RaiTensor rai_tensor_rope(RaiArena *arena, RaiTensor t, int start_idx, float theta_scale);
+RaiTensor rai_tensor_copy(RaiArena* arena, RaiTensor t);
+RaiTensor rai_tensor_scale(RaiArena* arena, RaiTensor t, float scale);
+RaiTensor rai_tensor_relu(RaiArena* arena, RaiTensor t);
+RaiTensor rai_tensor_leaky_relu(RaiArena* arena, RaiTensor t, float leak);
+RaiTensor rai_tensor_silu(RaiArena* arena, RaiTensor t);
+RaiTensor rai_tensor_gelu(RaiArena* arena, RaiTensor t);
+RaiTensor rai_tensor_softmax(RaiArena* arena, RaiTensor t);
+RaiTensor rai_tensor_rope(RaiArena* arena, RaiTensor t, int start_idx, float theta_scale);
 
 // Unary Operations Gradients
-RaiTensor rai_tensor_scale_grad(RaiArena *arena, RaiTensor d_out, float scale);
-RaiTensor rai_tensor_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
-RaiTensor rai_tensor_leaky_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in, float leak);
-RaiTensor rai_tensor_silu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
-RaiTensor rai_tensor_softmax_grad(RaiArena *arena, RaiTensor d_out, RaiTensor probs);
-RaiTensor rai_tensor_rope_grad(RaiArena *arena, RaiTensor d_out, unsigned long start_idx, float theta_scale);
+RaiTensor rai_tensor_scale_grad(RaiArena* arena, RaiTensor d_out, float scale);
+RaiTensor rai_tensor_relu_grad(RaiArena* arena, RaiTensor d_out, RaiTensor in);
+RaiTensor rai_tensor_leaky_relu_grad(RaiArena* arena, RaiTensor d_out, RaiTensor in, float leak);
+RaiTensor rai_tensor_silu_grad(RaiArena* arena, RaiTensor d_out, RaiTensor in);
+RaiTensor rai_tensor_softmax_grad(RaiArena* arena, RaiTensor d_out, RaiTensor probs);
+RaiTensor rai_tensor_rope_grad(RaiArena* arena, RaiTensor d_out, unsigned long start_idx, float theta_scale);
 
 // ------------------------- MLP API ---------------------------------
 typedef struct {
@@ -473,7 +473,7 @@ typedef struct {
 
 // Loss and Backprop Seeding
 float rai_cross_entropy(RaiTensor logits, size_t batch_size, size_t seq_len, int targets[batch_size * seq_len]);
-RaiTensor rai_cross_entropy_grad(RaiArena *arena, RaiTensor logits, size_t batch_size, size_t seq_len, int targets[batch_size * seq_len]);
+RaiTensor rai_cross_entropy_grad(RaiArena* arena, RaiTensor logits, size_t batch_size, size_t seq_len, int targets[batch_size * seq_len]);
 
 // ------------------------- Engine API ---------------------------------
 RaiEngine rai_engine_create(
@@ -485,12 +485,12 @@ RaiEngine rai_engine_create(
 
 void rai_engine_destroy(
 	// Mutating Object
-	RaiEngine *engine
+	RaiEngine* engine
 );
 
 RaiModelActs rai_engine_forward(
 	// Workspace
-	RaiArena *scratch,
+	RaiArena* scratch,
 
 	// Engine Context
 	RaiEngine engine,
@@ -506,8 +506,8 @@ RaiModelActs rai_engine_forward(
 
 RaiModel rai_engine_backward(
 	// Workspaces
-	RaiArena *scratch_acts,
-	RaiArena *scratch_grads,
+	RaiArena* scratch_acts,
+	RaiArena* scratch_grads,
 
 	// Engine Context
 	RaiEngine engine,
@@ -529,7 +529,7 @@ RaiModel rai_engine_backward(
 
 void rai_engine_step(
 	// Mutating Object
-	RaiEngine *engine,
+	RaiEngine* engine,
 
 	// Gradients
 	RaiModel grads
@@ -545,35 +545,35 @@ typedef struct {
 
 typedef struct {
 	size_t length;
-	char *data;
+	char* data;
 } RaiString;
 
 typedef struct {
 	size_t count;
-	int *data;
+	int* data;
 } RaiTokenArray;
 
 typedef struct {
 	size_t vocab_size;
-	RaiMerge *merges;
-	RaiString *vocab;
+	RaiMerge* merges;
+	RaiString* vocab;
 } RaiTokenizer;
 
 RaiTokenizer rai_tokenizer_train(
-	RaiArena *arena,
-	RaiArena *scratch,
+	RaiArena* arena,
+	RaiArena* scratch,
 	RaiString text,
 	size_t target_vocab_size
 );
 
 RaiTokenArray rai_tokenizer_encode(
-	RaiArena *arena,
+	RaiArena* arena,
 	RaiTokenizer tok,
 	RaiString text
 );
 
 RaiString rai_tokenizer_decode(
-	RaiArena *arena,
+	RaiArena* arena,
 	RaiTokenizer tok,
 	RaiTokenArray tokens
 );
@@ -588,7 +588,7 @@ void rai_tensor_info(RaiTensor t)
 	for (size_t i = 0; i < RAI__TENSOR_MAXRANK; ++i) {
 		RAI_PRINTF("dims[%zu] = %zu, strs[%zu] = %zu\n", i, t.dims[i], i, t.strs[i]);
 	}
-	RAI_PRINTF("data = %p\n", (void *)t.data);
+	RAI_PRINTF("data = %p\n", (void*)t.data);
 	RAI_PRINTF("count = %zu\n", t.count);
 }
 
@@ -648,25 +648,25 @@ RaiArena rai_arena_create(size_t capacity_bytes)
 	return arena;
 }
 
-void *rai_arena_alloc(RaiArena *arena, size_t size_bytes)
+void* rai_arena_alloc(RaiArena* arena, size_t size_bytes)
 {
 	size_t aligned_size_bytes = RAI__ALIGN(size_bytes);
 	RAI_ASSERT(arena->alloced_bytes + aligned_size_bytes <= arena->capacity_bytes && "Arena OOM");
 
-	uint8_t *target_pointer = (uint8_t *)arena->memory_begin + arena->alloced_bytes;
+	uint8_t* target_pointer = (uint8_t*)arena->memory_begin + arena->alloced_bytes;
 	arena->alloced_bytes += aligned_size_bytes;
 
-	return (void *)target_pointer;
+	return (void*)target_pointer;
 }
 
 #undef RAI__ALIGN
 
-void rai_arena_clear(RaiArena *arena)
+void rai_arena_clear(RaiArena* arena)
 {
 	arena->alloced_bytes = 0;
 }
 
-void rai_arena_destroy(RaiArena *arena)
+void rai_arena_destroy(RaiArena* arena)
 {
 	arena->alloced_bytes = 0;
 	arena->capacity_bytes = 0;
@@ -674,7 +674,7 @@ void rai_arena_destroy(RaiArena *arena)
 	arena->memory_begin = nullptr;
 }
 
-RaiTensor rai__tensor_alloc(RaiArena *arena, size_t rank, size_t dims[rank + 1])
+RaiTensor rai__tensor_alloc(RaiArena* arena, size_t rank, size_t dims[rank + 1])
 {
 	RAI_ASSERT(rank <= RAI__TENSOR_MAXRANK && "Tensor rank exceeds limit");
 	RaiTensor t = { .rank = rank };
@@ -703,7 +703,7 @@ RaiTensor rai__tensor_alloc(RaiArena *arena, size_t rank, size_t dims[rank + 1])
 	return t;
 }
 
-RaiTensor rai__tensor_alloc_randn(RaiArena *arena, float mean, float std_dev, size_t rank, size_t dims[rank + 1])
+RaiTensor rai__tensor_alloc_randn(RaiArena* arena, float mean, float std_dev, size_t rank, size_t dims[rank + 1])
 {
 	RaiTensor t = rai__tensor_alloc(arena, rank, dims);
 	for (size_t i = 0; i < t.count; ++i) {
@@ -712,7 +712,7 @@ RaiTensor rai__tensor_alloc_randn(RaiArena *arena, float mean, float std_dev, si
 	return t;
 }
 
-RaiTensor rai__tensor_alloc_fill(RaiArena *arena, float fill, size_t rank, size_t dims[rank + 1])
+RaiTensor rai__tensor_alloc_fill(RaiArena* arena, float fill, size_t rank, size_t dims[rank + 1])
 {
 	RaiTensor t = rai__tensor_alloc(arena, rank, dims);
 	for (size_t i = 0; i < t.count; ++i) {
@@ -857,7 +857,7 @@ static void rai__tensor_add(RaiTensor out, RaiTensor a, RaiTensor b)
 	}
 }
 
-RaiTensor rai_tensor_add(RaiArena *arena, RaiTensor a, RaiTensor b)
+RaiTensor rai_tensor_add(RaiArena* arena, RaiTensor a, RaiTensor b)
 {
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(add, a, b, RAI__TENSOR_MAXRANK);
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, a);
@@ -889,7 +889,7 @@ static void rai__tensor_sub(RaiTensor out, RaiTensor a, RaiTensor b)
 	}
 }
 
-RaiTensor rai_tensor_sub(RaiArena *arena, RaiTensor a, RaiTensor b)
+RaiTensor rai_tensor_sub(RaiArena* arena, RaiTensor a, RaiTensor b)
 {
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(add, a, b, RAI__TENSOR_MAXRANK);
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, a);
@@ -921,7 +921,7 @@ static void rai__tensor_mul(RaiTensor out, RaiTensor a, RaiTensor b)
 	}
 }
 
-RaiTensor rai_tensor_mul(RaiArena *arena, RaiTensor a, RaiTensor b)
+RaiTensor rai_tensor_mul(RaiArena* arena, RaiTensor a, RaiTensor b)
 {
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(mul, a, b, RAI__TENSOR_MAXRANK);
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, a);
@@ -954,7 +954,7 @@ static void rai__tensor_gelu(RaiTensor out, RaiTensor in)
 	}
 }
 
-RaiTensor rai_tensor_gelu(RaiArena *arena, RaiTensor t)
+RaiTensor rai_tensor_gelu(RaiArena* arena, RaiTensor t)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_gelu(out, t);
@@ -986,7 +986,7 @@ static void rai__tensor_silu(RaiTensor out, RaiTensor in)
 	}
 }
 
-RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t)
+RaiTensor rai_tensor_silu(RaiArena* arena, RaiTensor t)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_silu(out, t);
@@ -1017,14 +1017,14 @@ static void rai__tensor_leaky_relu(RaiTensor out, RaiTensor in, float leak)
 	}
 }
 
-RaiTensor rai_tensor_leaky_relu(RaiArena *arena, RaiTensor t, float leak)
+RaiTensor rai_tensor_leaky_relu(RaiArena* arena, RaiTensor t, float leak)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_leaky_relu(out, t, leak);
 	return out;
 }
 
-RaiTensor rai_tensor_relu(RaiArena *arena, RaiTensor t)
+RaiTensor rai_tensor_relu(RaiArena* arena, RaiTensor t)
 {
 	return rai_tensor_leaky_relu(arena, t, 0.0f);
 }
@@ -1052,7 +1052,7 @@ static void rai__tensor_copy(RaiTensor out, RaiTensor in)
 	}
 }
 
-RaiTensor rai_tensor_copy(RaiArena *arena, RaiTensor t)
+RaiTensor rai_tensor_copy(RaiArena* arena, RaiTensor t)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_copy(out, t);
@@ -1082,7 +1082,7 @@ static void rai__tensor_scale(RaiTensor out, RaiTensor in, float scale)
 	}
 }
 
-RaiTensor rai_tensor_scale(RaiArena *arena, RaiTensor t, float scale)
+RaiTensor rai_tensor_scale(RaiArena* arena, RaiTensor t, float scale)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_scale(out, t, scale);
@@ -1107,9 +1107,9 @@ static void rai__tensor_matmul_t(RaiTensor out, RaiTensor a, RaiTensor b)
 		size_t sr_b = b.strs[row_index];
 		size_t sc_b = b.strs[col_index];
 
-		float *restrict ptr_out = out.data;
-		float *restrict ptr_a = a.data;
-		float *restrict ptr_b = b.data;
+		float* restrict ptr_out = out.data;
+		float* restrict ptr_a = a.data;
+		float* restrict ptr_b = b.data;
 		for (size_t i = 0; i < M; ++i) {
 			for (size_t j = 0; j < N; ++j) {
 				float acc = 0.0f;
@@ -1136,7 +1136,7 @@ static void rai__tensor_matmul_t(RaiTensor out, RaiTensor a, RaiTensor b)
 	}
 }
 
-RaiTensor rai_tensor_matmul_t(RaiArena *arena, RaiTensor a, RaiTensor b)
+RaiTensor rai_tensor_matmul_t(RaiArena* arena, RaiTensor a, RaiTensor b)
 {
 	// dimensions check
 	size_t col_index = RAI__TENSOR_MAXRANK - 1;
@@ -1183,8 +1183,8 @@ static void rai__tensor_rope(RaiTensor out, RaiTensor in, int start_idx, float t
 				sin_v[k] = RAI_SINF(alpha);
 			}
 
-			float *src = in.data + (i1 * s1);
-			float *dst = out.data + (i1 * os1);
+			float* src = in.data + (i1 * s1);
+			float* dst = out.data + (i1 * os1);
 
 			for (size_t k = 0; k < half_d0; ++k) {
 				// Temporary variables make this in-place safe
@@ -1210,7 +1210,7 @@ static void rai__tensor_rope(RaiTensor out, RaiTensor in, int start_idx, float t
 	}
 }
 
-RaiTensor rai_tensor_rope(RaiArena *arena, RaiTensor t, int start_idx, float theta_scale)
+RaiTensor rai_tensor_rope(RaiArena* arena, RaiTensor t, int start_idx, float theta_scale)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_rope(out, t, start_idx, theta_scale);
@@ -1259,7 +1259,7 @@ static void rai__tensor_rmsnorm(RaiTensor out, RaiTensor in, RaiTensor weight, f
 	}
 }
 
-RaiTensor rai_tensor_rmsnorm(RaiArena *arena, RaiTensor t, RaiTensor weight, float eps)
+RaiTensor rai_tensor_rmsnorm(RaiArena* arena, RaiTensor t, RaiTensor weight, float eps)
 {
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(RMSNorm, t, weight, RAI__TENSOR_MAXRANK);
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
@@ -1316,14 +1316,14 @@ static void rai__tensor_softmax(RaiTensor out, RaiTensor in)
 	}
 }
 
-RaiTensor rai_tensor_softmax(RaiArena *arena, RaiTensor t)
+RaiTensor rai_tensor_softmax(RaiArena* arena, RaiTensor t)
 {
 	RaiTensor out = RAI_TENSOR_ALLOC_LIKE(arena, t);
 	rai__tensor_softmax(out, t);
 	return out;
 }
 
-RaiModel rai_model_alloc_weights(RaiArena *arena, RaiModelConfig config)
+RaiModel rai_model_alloc_weights(RaiArena* arena, RaiModelConfig config)
 {
 	size_t V = config.vocab_size;
 	size_t D = config.embedding_length;
@@ -1362,7 +1362,7 @@ RaiModel rai_model_alloc_weights(RaiArena *arena, RaiModelConfig config)
 	return w;
 }
 
-RaiModel rai_model_alloc_zeroed(RaiArena *arena, RaiModelConfig config)
+RaiModel rai_model_alloc_zeroed(RaiArena* arena, RaiModelConfig config)
 {
 	size_t V = config.vocab_size;
 	size_t D = config.embedding_length;
@@ -1402,7 +1402,7 @@ RaiModel rai_model_alloc_zeroed(RaiArena *arena, RaiModelConfig config)
 
 RaiModelActs rai_engine_forward(
 	// Workspace
-	RaiArena *scratch,
+	RaiArena* scratch,
 
 	// Engine Context
 	RaiEngine engine,
@@ -1534,7 +1534,7 @@ float rai_cross_entropy(RaiTensor logits, size_t batch_size, size_t seq_len, int
 	return loss / (float)batch_size / (float)seq_len;
 }
 
-RaiTensor rai_cross_entropy_grad(RaiArena *arena, RaiTensor logits, size_t batch_size, size_t seq_len, int targets[batch_size * seq_len])
+RaiTensor rai_cross_entropy_grad(RaiArena* arena, RaiTensor logits, size_t batch_size, size_t seq_len, int targets[batch_size * seq_len])
 {
 	RAI_ASSERT(logits.rank == 3 && "logits is supposed to be a rank 3 tensor of shape [B, S, V]");
 	RaiTensor d_logits = rai_tensor_softmax(arena, logits);
@@ -1576,11 +1576,11 @@ static void rai__tensor_matmul_t_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_
 		size_t sr_b = b.strs[row_index];
 		size_t sc_b = b.strs[col_index];
 
-		float *restrict ptr_dout = d_out.data;
-		float *restrict ptr_da = d_a.data;
-		float *restrict ptr_db = d_b.data;
-		float *restrict ptr_a = a.data;
-		float *restrict ptr_b = b.data;
+		float* restrict ptr_dout = d_out.data;
+		float* restrict ptr_da = d_a.data;
+		float* restrict ptr_db = d_b.data;
+		float* restrict ptr_a = a.data;
+		float* restrict ptr_b = b.data;
 
 		// d_a = d_out @ b
 		for (size_t i = 0; i < M; ++i) {
@@ -1622,7 +1622,7 @@ static void rai__tensor_matmul_t_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_
 	}
 }
 
-RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	// Promote the batch dimensions only
@@ -1710,7 +1710,7 @@ static void rai__tensor_rmsnorm_grad(RaiTensor d_in, RaiTensor d_w, RaiTensor d_
 	}
 }
 
-RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps)
+RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena* arena_in, RaiArena* arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps)
 {
 	RaiTensor in_p = in;
 	RaiTensor w_p = weight;
@@ -1762,7 +1762,7 @@ static void rai__tensor_add_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_out)
 	}
 }
 
-RaiTensorBinOpGrad rai_tensor_add_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_add_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(AddGradIn, a_p, b_p, RAI__TENSOR_MAXRANK);
@@ -1811,7 +1811,7 @@ static void rai__tensor_sub_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_out)
 	}
 }
 
-RaiTensorBinOpGrad rai_tensor_sub_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_sub_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(AddGradIn, a_p, b_p, RAI__TENSOR_MAXRANK);
@@ -1866,7 +1866,7 @@ static void rai__tensor_mul_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_out, 
 	}
 }
 
-RaiTensorBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_mul_grad(RaiArena* arena_a, RaiArena* arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(MulGradIn, a_p, b_p, RAI__TENSOR_MAXRANK);
@@ -1921,7 +1921,7 @@ static void rai__tensor_silu_grad(RaiTensor d_in, RaiTensor d_out, RaiTensor in)
 	}
 }
 
-RaiTensor rai_tensor_silu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in)
+RaiTensor rai_tensor_silu_grad(RaiArena* arena, RaiTensor d_out, RaiTensor in)
 {
 	RaiTensor d_in = RAI_TENSOR_ALLOC_LIKE(arena, in);
 	rai__tensor_silu_grad(d_in, d_out, in);
@@ -1959,14 +1959,14 @@ static void rai__tensor_leaky_relu_grad(RaiTensor d_in, RaiTensor d_out, RaiTens
 	}
 }
 
-RaiTensor rai_tensor_leaky_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in, float leak)
+RaiTensor rai_tensor_leaky_relu_grad(RaiArena* arena, RaiTensor d_out, RaiTensor in, float leak)
 {
 	RaiTensor d_in = RAI_TENSOR_ALLOC_LIKE(arena, in);
 	rai__tensor_leaky_relu_grad(d_in, d_out, in, leak);
 	return d_in;
 }
 
-RaiTensor rai_tensor_relu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in)
+RaiTensor rai_tensor_relu_grad(RaiArena* arena, RaiTensor d_out, RaiTensor in)
 {
 	return rai_tensor_leaky_relu_grad(arena, d_out, in, 0.0f);
 }
@@ -2013,14 +2013,14 @@ static void rai__tensor_softmax_grad(RaiTensor d_in, RaiTensor d_out, RaiTensor 
 	}
 }
 
-RaiTensor rai_tensor_softmax_grad(RaiArena *arena, RaiTensor d_out, RaiTensor probs)
+RaiTensor rai_tensor_softmax_grad(RaiArena* arena, RaiTensor d_out, RaiTensor probs)
 {
 	RaiTensor d_in = RAI_TENSOR_ALLOC_LIKE(arena, probs);
 	rai__tensor_softmax_grad(d_in, d_out, probs);
 	return d_in;
 }
 
-RaiTensor rai_tensor_scale_grad(RaiArena *arena, RaiTensor d_out, float scale)
+RaiTensor rai_tensor_scale_grad(RaiArena* arena, RaiTensor d_out, float scale)
 {
 	return rai_tensor_scale(arena, d_out, scale);
 }
@@ -2052,8 +2052,8 @@ static void rai__tensor_rope_grad(RaiTensor d_in, RaiTensor d_out, unsigned long
 				sin_v[k] = RAI_SINF(alpha);
 			}
 
-			float *src = d_out.data + (i1 * s1);
-			float *dst = d_in.data + (i1 * os1);
+			float* src = d_out.data + (i1 * s1);
+			float* dst = d_in.data + (i1 * os1);
 
 			for (size_t k = 0; k < half_d0; ++k) {
 				float v_l = src[k * s0];
@@ -2079,7 +2079,7 @@ static void rai__tensor_rope_grad(RaiTensor d_in, RaiTensor d_out, unsigned long
 	}
 }
 
-RaiTensor rai_tensor_rope_grad(RaiArena *arena, RaiTensor d_out, unsigned long start_idx, float theta_scale)
+RaiTensor rai_tensor_rope_grad(RaiArena* arena, RaiTensor d_out, unsigned long start_idx, float theta_scale)
 {
 	RaiTensor d_in = RAI_TENSOR_ALLOC_LIKE(arena, d_out);
 	rai__tensor_rope_grad(d_in, d_out, start_idx, theta_scale);
@@ -2088,8 +2088,8 @@ RaiTensor rai_tensor_rope_grad(RaiArena *arena, RaiTensor d_out, unsigned long s
 
 RaiModel rai_engine_backward(
 	// Workspaces
-	RaiArena *scratch_acts,
-	RaiArena *scratch_grads,
+	RaiArena* scratch_acts,
+	RaiArena* scratch_grads,
 
 	// Engine Context
 	RaiEngine engine,
@@ -2222,8 +2222,8 @@ RaiModel rai_engine_backward(
 	for (size_t b = 0; b < B; ++b) {
 		for (size_t s = 0; s < S; ++s) {
 			int token = tokens[b * seq_len + s];
-			float *dst_row = grads.token_embd.data + (token * s_embd);
-			float *src_row = RAI_TENSOR_SUBTENSOR(d_x, b, s).data;
+			float* dst_row = grads.token_embd.data + (token * s_embd);
+			float* src_row = RAI_TENSOR_SUBTENSOR(d_x, b, s).data;
 
 			// In-place raw pointer accumulation to avoid arena bloat
 			for (size_t d = 0; d < D; ++d) {
@@ -2259,7 +2259,7 @@ RaiEngine rai_engine_create(
 
 void rai_engine_destroy(
 	// Mutating Object
-	RaiEngine *engine
+	RaiEngine* engine
 )
 {
 	rai_arena_destroy(&engine->arena);
@@ -2290,7 +2290,7 @@ static void rai__adamw_update(RaiAdamWConfig adamw_config, float m_corr, float v
 
 void rai_engine_step(
 	// Mutating Object
-	RaiEngine *engine,
+	RaiEngine* engine,
 
 	// Gradients
 	RaiModel grads
@@ -2309,29 +2309,29 @@ void rai_engine_step(
 	}
 }
 
-RaiTokenizer rai_tokenizer_train(RaiArena *arena, RaiArena *scratch, RaiString text, size_t target_vocab_size)
+RaiTokenizer rai_tokenizer_train(RaiArena* arena, RaiArena* scratch, RaiString text, size_t target_vocab_size)
 {
 	RAI_ASSERT(target_vocab_size >= 256 && "Vocab size must be at least 256");
 
 	RaiTokenizer tok = { 0 };
 	tok.vocab_size = target_vocab_size;
-	tok.merges = (RaiMerge *)rai_arena_alloc(arena, (target_vocab_size - 256) * sizeof(RaiMerge));
-	tok.vocab = (RaiString *)rai_arena_alloc(arena, target_vocab_size * sizeof(RaiString));
+	tok.merges = (RaiMerge*)rai_arena_alloc(arena, (target_vocab_size - 256) * sizeof(RaiMerge));
+	tok.vocab = (RaiString*)rai_arena_alloc(arena, target_vocab_size * sizeof(RaiString));
 
 	// Initialize Base Vocabulary (0-255 raw bytes)
 	for (size_t i = 0; i < 256; ++i) {
-		tok.vocab[i].data = (char *)rai_arena_alloc(arena, 1);
+		tok.vocab[i].data = (char*)rai_arena_alloc(arena, 1);
 		tok.vocab[i].data[0] = (char)i;
 		tok.vocab[i].length = 1;
 	}
 
 	size_t num_tokens = text.length;
-	int *tokens = (int *)rai_arena_alloc(scratch, num_tokens * sizeof(int));
+	int* tokens = (int*)rai_arena_alloc(scratch, num_tokens * sizeof(int));
 	for (size_t i = 0; i < num_tokens; ++i) {
 		tokens[i] = (unsigned char)text.data[i];
 	}
 
-	int *counts = (int *)rai_arena_alloc(scratch, target_vocab_size * target_vocab_size * sizeof(int));
+	int* counts = (int*)rai_arena_alloc(scratch, target_vocab_size * target_vocab_size * sizeof(int));
 	RAI_MEMSET(counts, 0, target_vocab_size * target_vocab_size * sizeof(int));
 
 	for (size_t new_id = 256; new_id < target_vocab_size; ++new_id) {
@@ -2369,7 +2369,7 @@ RaiTokenizer rai_tokenizer_train(RaiArena *arena, RaiArena *scratch, RaiString t
 		size_t len_l = tok.vocab[best_left].length;
 		size_t len_r = tok.vocab[best_right].length;
 		tok.vocab[new_id].length = len_l + len_r;
-		tok.vocab[new_id].data = (char *)rai_arena_alloc(arena, len_l + len_r);
+		tok.vocab[new_id].data = (char*)rai_arena_alloc(arena, len_l + len_r);
 		RAI_MEMCPY(tok.vocab[new_id].data, tok.vocab[best_left].data, len_l);
 		RAI_MEMCPY(tok.vocab[new_id].data + len_l, tok.vocab[best_right].data, len_r);
 
@@ -2388,13 +2388,13 @@ RaiTokenizer rai_tokenizer_train(RaiArena *arena, RaiArena *scratch, RaiString t
 	return tok;
 }
 
-RaiTokenArray rai_tokenizer_encode(RaiArena *arena, RaiTokenizer tok, RaiString text)
+RaiTokenArray rai_tokenizer_encode(RaiArena* arena, RaiTokenizer tok, RaiString text)
 {
 	RaiTokenArray out = { 0 };
 	if (text.length == 0)
 		return out;
 
-	int *tokens = (int *)rai_arena_alloc(arena, text.length * sizeof(int));
+	int* tokens = (int*)rai_arena_alloc(arena, text.length * sizeof(int));
 	for (size_t i = 0; i < text.length; ++i) {
 		tokens[i] = (unsigned char)text.data[i];
 	}
@@ -2424,7 +2424,7 @@ RaiTokenArray rai_tokenizer_encode(RaiArena *arena, RaiTokenizer tok, RaiString 
 	return out;
 }
 
-RaiString rai_tokenizer_decode(RaiArena *arena, RaiTokenizer tok, RaiTokenArray tokens)
+RaiString rai_tokenizer_decode(RaiArena* arena, RaiTokenizer tok, RaiTokenArray tokens)
 {
 	RaiString out = { 0 };
 	if (tokens.count == 0)
@@ -2436,7 +2436,7 @@ RaiString rai_tokenizer_decode(RaiArena *arena, RaiTokenizer tok, RaiTokenArray 
 		total_len += tok.vocab[tokens.data[i]].length;
 	}
 
-	char *text = (char *)rai_arena_alloc(arena, total_len + 1);
+	char* text = (char*)rai_arena_alloc(arena, total_len + 1);
 	size_t cursor = 0;
 	for (size_t i = 0; i < tokens.count; ++i) {
 		size_t tlen = tok.vocab[tokens.data[i]].length;
@@ -2467,17 +2467,19 @@ float rai_lr_cosine(float step, float warmup_steps, float max_steps, float max_l
 	return min_lr + coeff * (max_lr - min_lr);
 }
 
-RaiMlpLayer rai_mlp_layer_alloc_randn(RaiArena* arena, size_t num_inputs, size_t num_outputs) {
+RaiMlpLayer rai_mlp_layer_alloc_randn(RaiArena* arena, size_t num_inputs, size_t num_outputs)
+{
 	RaiMlpLayer layer = { 0 };
 
 	float std_dev = 1.0f / RAI_SQRTF((float)num_inputs);
 	layer.weight = RAI_TENSOR_ALLOC_RANDN(arena, 0.0f, std_dev, num_outputs, num_inputs);
-	layer.bias   = RAI_TENSOR_ALLOC_RANDN(arena, 0.0f, std_dev, num_outputs);
+	layer.bias = RAI_TENSOR_ALLOC_RANDN(arena, 0.0f, std_dev, num_outputs);
 
 	return layer;
 }
 
-RaiMlpLayerActs rai_mlp_layer_forward(RaiArena* arena, RaiMlpLayer layer, RaiTensor in) {
+RaiMlpLayerActs rai_mlp_layer_forward(RaiArena* arena, RaiMlpLayer layer, RaiTensor in)
+{
 	RaiMlpLayerActs acts = { 0 };
 
 	acts.prod = rai_tensor_matmul_t(arena, in, layer.weight);
@@ -2494,7 +2496,8 @@ RaiMlpLayerGrad rai_mlp_layer_backward(
 	RaiMlpLayerActs acts,
 	RaiTensor d_out,
 	RaiTensor in
-) {
+)
+{
 	RaiMlpLayerGrad grad = { 0 };
 
 	RaiTensor d_sum = rai_tensor_silu_grad(scratch, d_out, acts.sum);
@@ -2508,4 +2511,3 @@ RaiMlpLayerGrad rai_mlp_layer_backward(
 }
 
 #endif // RRIFTT_AI_IMPLEMENTATION
-

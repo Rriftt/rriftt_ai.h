@@ -14,8 +14,8 @@ int main()
 	RaiTokenArray tokens = rai_tokenizer_encode(&perm, tok, text);
 
 	size_t seq_len = tokens.count - 1;
-	int *inputs = tokens.data;
-	int *targets = tokens.data + 1;
+	int* inputs = tokens.data;
+	int* targets = tokens.data + 1;
 
 	RaiModelConfig mcfg = {
 		.vocab_size = 260,

@@ -13,7 +13,7 @@ float mse(RaiTensor preds, RaiTensor targets)
 	return loss / (float)preds.count;
 }
 
-RaiTensor mse_grad(RaiArena *arena, RaiTensor preds, RaiTensor targets)
+RaiTensor mse_grad(RaiArena* arena, RaiTensor preds, RaiTensor targets)
 {
 	RAI_ASSERT(preds.count == targets.count && "Dimention Mismatch");
 	RaiTensor d_preds = RAI_TENSOR_ALLOC_LIKE(arena, preds);

@@ -287,9 +287,9 @@ RaiTensor rai_tensor_add(RaiArena *arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_sub(RaiArena *arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_mul(RaiArena *arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_matmul_t(RaiArena *arena, RaiTensor a, RaiTensor b);
+RaiTensor rai_tensor_rmsnorm(RaiArena *arena, RaiTensor t, RaiTensor weight, float eps);
 
 // Unary Operations
-RaiTensor rai_tensor_rmsnorm(RaiArena *arena, RaiTensor t, RaiTensor weight, float eps);
 RaiTensor rai_tensor_rope(RaiArena *arena, RaiTensor t, int start_idx, float theta_scale);
 RaiTensor rai_tensor_softmax(RaiArena *arena, RaiTensor t);
 RaiTensor rai_tensor_silu(RaiArena *arena, RaiTensor t);

@@ -33,7 +33,7 @@ int main()
 
 	// Backward: Assuming dC is all 1s
 	RaiTensor dc = RAI_TENSOR_ALLOC_FILL(&arena, 1.0f, 2, 2);
-	RaiBinOpGrad grad = rai_tensor_matmul_t_grad(&arena, &arena, dc, a, b);
+	RaiTensorBinOpGrad grad = rai_tensor_matmul_t_grad(&arena, &arena, dc, a, b);
 
 	// dA = dC @ B
 	RAI_ASSERT(grad.d_a.data[0] == 12.0f);
@@ -58,7 +58,7 @@ int main()
 	RAI_ASSERT(c3d.dims[RAI__TENSOR_MAXRANK - 1] == 5);
 
 	RaiTensor dc3d = RAI_TENSOR_ALLOC_FILL(&arena, 1.0f, 2, 3, 5);
-	RaiBinOpGrad grad3d = rai_tensor_matmul_t_grad(&arena, &arena, dc3d, a3d, b2d);
+	RaiTensorBinOpGrad grad3d = rai_tensor_matmul_t_grad(&arena, &arena, dc3d, a3d, b2d);
 
 	RAI_ASSERT(grad3d.d_a.rank == 3);
 	RAI_ASSERT(grad3d.d_b.rank == 2); // Natively preserved its 2D shape

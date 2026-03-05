@@ -82,10 +82,10 @@ int main()
 		// BackProp
 		RaiTensor dP = mse_grad(&scratch_arena, P, Y); // [B, S, D]
 		RaiTensor dA = rai_tensor_softmax_grad(&scratch_arena, dP, P);
-		RaiBinOpGrad A_grad = rai_tensor_add_grad(&scratch_arena, &scratch_arena, dA, XWT, B0);
+		RaiTensorBinOpGrad A_grad = rai_tensor_add_grad(&scratch_arena, &scratch_arena, dA, XWT, B0);
 		RaiTensor dXWT = A_grad.d_a;
 		RaiTensor dB0 = A_grad.d_b;
-		RaiBinOpGrad XWT_grad = rai_tensor_matmul_t_grad(&scratch_arena, &scratch_arena, dXWT, X, W0);
+		RaiTensorBinOpGrad XWT_grad = rai_tensor_matmul_t_grad(&scratch_arena, &scratch_arena, dXWT, X, W0);
 		RaiTensor dW0 = XWT_grad.d_b;
 
 		// Update

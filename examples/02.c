@@ -102,19 +102,19 @@ int main()
 
 		// Layer 1
 		RaiTensor dV1 = rai_tensor_silu_grad(&scratch_arena, dA1, V1);
-		RaiBinOpGrad gV1 = rai_tensor_add_grad(&scratch_arena, &scratch_arena, dV1, U1, B1);
+		RaiTensorBinOpGrad gV1 = rai_tensor_add_grad(&scratch_arena, &scratch_arena, dV1, U1, B1);
 		RaiTensor dU1 = gV1.d_a;
 		RaiTensor dB1 = gV1.d_b;
-		RaiBinOpGrad gU1 = rai_tensor_matmul_t_grad(&scratch_arena, &scratch_arena, dU1, A0, W1);
+		RaiTensorBinOpGrad gU1 = rai_tensor_matmul_t_grad(&scratch_arena, &scratch_arena, dU1, A0, W1);
 		RaiTensor dA0 = gU1.d_a;
 		RaiTensor dW1 = gU1.d_b;
 
 		// Layer 0
 		RaiTensor dV0 = rai_tensor_silu_grad(&scratch_arena, dA0, V0);
-		RaiBinOpGrad gV0 = rai_tensor_add_grad(&scratch_arena, &scratch_arena, dV0, U0, B0);
+		RaiTensorBinOpGrad gV0 = rai_tensor_add_grad(&scratch_arena, &scratch_arena, dV0, U0, B0);
 		RaiTensor dU0 = gV0.d_a;
 		RaiTensor dB0 = gV0.d_b;
-		RaiBinOpGrad gU0 = rai_tensor_matmul_t_grad(&scratch_arena, &scratch_arena, dU0, X, W0);
+		RaiTensorBinOpGrad gU0 = rai_tensor_matmul_t_grad(&scratch_arena, &scratch_arena, dU0, X, W0);
 		RaiTensor dX = gU0.d_a;
 		RaiTensor dW0 = gU0.d_b;
 

@@ -303,14 +303,14 @@ RaiTensor rai_tensor_copy(RaiArena *arena, RaiTensor t);
 typedef struct {
 	RaiTensor d_a;
 	RaiTensor d_b;
-} RaiBinOpGrad;
+} RaiTensorBinOpGrad;
 
 // Dual-Arena Gradient Functions
-RaiBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps);
-RaiBinOpGrad rai_tensor_add_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiBinOpGrad rai_tensor_sub_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
-RaiBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps);
+RaiTensorBinOpGrad rai_tensor_add_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_sub_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
+RaiTensorBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b);
 
 // Single-Arena Gradient Functions
 RaiTensor rai_tensor_silu_grad(RaiArena *arena, RaiTensor d_out, RaiTensor in);
@@ -1623,13 +1623,13 @@ static void rai__tensor_matmul_t_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_
 	}
 }
 
-RaiBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_matmul_t_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	// Promote the batch dimensions only
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(MatMulGradIn, a_p, b_p, RAI__TENSOR_MAXRANK - 2);
 
-	RaiBinOpGrad grad;
+	RaiTensorBinOpGrad grad;
 	// Allocate with ZEROES for broadcast accumulation
 	grad.d_a = RAI_TENSOR_ALLOC_LIKE_FILL(arena_a, a, 0.0f);
 	grad.d_b = RAI_TENSOR_ALLOC_LIKE_FILL(arena_b, b, 0.0f);
@@ -1711,13 +1711,13 @@ static void rai__tensor_rmsnorm_grad(RaiTensor d_in, RaiTensor d_w, RaiTensor d_
 	}
 }
 
-RaiBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps)
+RaiTensorBinOpGrad rai_tensor_rmsnorm_grad(RaiArena *arena_in, RaiArena *arena_weight, RaiTensor d_out, RaiTensor in, RaiTensor weight, float eps)
 {
 	RaiTensor in_p = in;
 	RaiTensor w_p = weight;
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(RMSNormGradIn, in_p, w_p, RAI__TENSOR_MAXRANK);
 
-	RaiBinOpGrad grad;
+	RaiTensorBinOpGrad grad;
 
 	grad.d_a = RAI_TENSOR_ALLOC_LIKE(arena_in, in);
 	grad.d_b = RAI_TENSOR_ALLOC_LIKE_FILL(arena_weight, weight, 0.0f);
@@ -1763,12 +1763,12 @@ static void rai__tensor_add_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_out)
 	}
 }
 
-RaiBinOpGrad rai_tensor_add_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_add_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(AddGradIn, a_p, b_p, RAI__TENSOR_MAXRANK);
 
-	RaiBinOpGrad grad;
+	RaiTensorBinOpGrad grad;
 	// Allocate with ZEROES for broadcast accumulation
 	grad.d_a = RAI_TENSOR_ALLOC_LIKE_FILL(arena_a, a, 0.0f);
 	grad.d_b = RAI_TENSOR_ALLOC_LIKE_FILL(arena_b, b, 0.0f);
@@ -1812,12 +1812,12 @@ static void rai__tensor_sub_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_out)
 	}
 }
 
-RaiBinOpGrad rai_tensor_sub_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_sub_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(AddGradIn, a_p, b_p, RAI__TENSOR_MAXRANK);
 
-	RaiBinOpGrad grad;
+	RaiTensorBinOpGrad grad;
 	// Allocate with ZEROES for broadcast accumulation
 	grad.d_a = RAI_TENSOR_ALLOC_LIKE_FILL(arena_a, a, 0.0f);
 	grad.d_b = RAI_TENSOR_ALLOC_LIKE_FILL(arena_b, b, 0.0f);
@@ -1867,12 +1867,12 @@ static void rai__tensor_mul_grad(RaiTensor d_a, RaiTensor d_b, RaiTensor d_out, 
 	}
 }
 
-RaiBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
+RaiTensorBinOpGrad rai_tensor_mul_grad(RaiArena *arena_a, RaiArena *arena_b, RaiTensor d_out, RaiTensor a, RaiTensor b)
 {
 	RaiTensor a_p = a, b_p = b;
 	RAI__TENSOR_BROADCAST_AND_PROMOTE(MulGradIn, a_p, b_p, RAI__TENSOR_MAXRANK);
 
-	RaiBinOpGrad grad;
+	RaiTensorBinOpGrad grad;
 	// Allocate with ZEROES for broadcast accumulation
 	grad.d_a = RAI_TENSOR_ALLOC_LIKE_FILL(arena_a, a, 0.0f);
 	grad.d_b = RAI_TENSOR_ALLOC_LIKE_FILL(arena_b, b, 0.0f);
@@ -2121,10 +2121,10 @@ RaiModel rai_engine_backward(
 	RaiModel grads = { 0 };
 
 	// LM Head
-	RaiBinOpGrad d_output = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_logits, acts.output_norm, engine.weights.output);
+	RaiTensorBinOpGrad d_output = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_logits, acts.output_norm, engine.weights.output);
 	grads.output = d_output.d_b; // Direct assignment. Perfect shape [V, D].
 
-	RaiBinOpGrad d_out_norm = rai_tensor_rmsnorm_grad(scratch_acts, scratch_grads, d_output.d_a, acts.blk[L - 1].x_out, engine.weights.output_norm, engine.model_config.attention_layer_norm_rms_epsilon);
+	RaiTensorBinOpGrad d_out_norm = rai_tensor_rmsnorm_grad(scratch_acts, scratch_grads, d_output.d_a, acts.blk[L - 1].x_out, engine.weights.output_norm, engine.model_config.attention_layer_norm_rms_epsilon);
 	grads.output_norm = d_out_norm.d_b;
 
 	RaiTensor d_x = d_out_norm.d_a;
@@ -2134,44 +2134,44 @@ RaiModel rai_engine_backward(
 		RaiTensor x_in = l == 0 ? acts.token_embd : acts.blk[l - 1].x_out;
 
 		// --- FFN Block ---
-		RaiBinOpGrad d_ffn_res = rai_tensor_add_grad(scratch_acts, scratch_acts, d_x, acts.blk[l].x_mid, acts.blk[l].ffn_down);
+		RaiTensorBinOpGrad d_ffn_res = rai_tensor_add_grad(scratch_acts, scratch_acts, d_x, acts.blk[l].x_mid, acts.blk[l].ffn_down);
 		RaiTensor d_x_mid = d_ffn_res.d_a;
 		RaiTensor d_ffn_down_out = d_ffn_res.d_b;
 
-		RaiBinOpGrad d_ffn_down = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_ffn_down_out, acts.blk[l].ffn_swiglu, engine.weights.blk[l].ffn_down);
+		RaiTensorBinOpGrad d_ffn_down = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_ffn_down_out, acts.blk[l].ffn_swiglu, engine.weights.blk[l].ffn_down);
 		grads.blk[l].ffn_down = d_ffn_down.d_b;
 
-		RaiBinOpGrad d_swiglu = rai_tensor_mul_grad(scratch_acts, scratch_acts, d_ffn_down.d_a, acts.blk[l].ffn_silu, acts.blk[l].ffn_up);
+		RaiTensorBinOpGrad d_swiglu = rai_tensor_mul_grad(scratch_acts, scratch_acts, d_ffn_down.d_a, acts.blk[l].ffn_silu, acts.blk[l].ffn_up);
 		RaiTensor d_ffn_silu_out = d_swiglu.d_a;
 		RaiTensor d_ffn_up_out = d_swiglu.d_b;
 
 		RaiTensor d_ffn_gate_out = rai_tensor_silu_grad(scratch_acts, d_ffn_silu_out, acts.blk[l].ffn_gate);
 
-		RaiBinOpGrad d_ffn_up = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_ffn_up_out, acts.blk[l].ffn_norm, engine.weights.blk[l].ffn_up);
+		RaiTensorBinOpGrad d_ffn_up = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_ffn_up_out, acts.blk[l].ffn_norm, engine.weights.blk[l].ffn_up);
 		grads.blk[l].ffn_up = d_ffn_up.d_b;
 
-		RaiBinOpGrad d_ffn_gate = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_ffn_gate_out, acts.blk[l].ffn_norm, engine.weights.blk[l].ffn_gate);
+		RaiTensorBinOpGrad d_ffn_gate = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_ffn_gate_out, acts.blk[l].ffn_norm, engine.weights.blk[l].ffn_gate);
 		grads.blk[l].ffn_gate = d_ffn_gate.d_b;
 
 		RaiTensor d_ffn_norm_in = rai_tensor_add(scratch_acts, d_ffn_up.d_a, d_ffn_gate.d_a);
 
-		RaiBinOpGrad d_ffn_norm = rai_tensor_rmsnorm_grad(scratch_acts, scratch_grads, d_ffn_norm_in, acts.blk[l].x_mid, engine.weights.blk[l].ffn_norm, engine.model_config.attention_layer_norm_rms_epsilon);
+		RaiTensorBinOpGrad d_ffn_norm = rai_tensor_rmsnorm_grad(scratch_acts, scratch_grads, d_ffn_norm_in, acts.blk[l].x_mid, engine.weights.blk[l].ffn_norm, engine.model_config.attention_layer_norm_rms_epsilon);
 		grads.blk[l].ffn_norm = d_ffn_norm.d_b;
 
 		d_x = rai_tensor_add(scratch_acts, d_x_mid, d_ffn_norm.d_a);
 
 		// --- Attention Block ---
-		RaiBinOpGrad d_attn_res = rai_tensor_add_grad(scratch_acts, scratch_acts, d_x, x_in, acts.blk[l].attn_output);
+		RaiTensorBinOpGrad d_attn_res = rai_tensor_add_grad(scratch_acts, scratch_acts, d_x, x_in, acts.blk[l].attn_output);
 		RaiTensor d_x_attn_mid = d_attn_res.d_a;
 		RaiTensor d_attn_out_in = d_attn_res.d_b;
 
-		RaiBinOpGrad d_attn_output = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_out_in, acts.blk[l].attn_ctx, engine.weights.blk[l].attn_output);
+		RaiTensorBinOpGrad d_attn_output = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_out_in, acts.blk[l].attn_ctx, engine.weights.blk[l].attn_output);
 		grads.blk[l].attn_output = d_attn_output.d_b;
 
 		RaiTensor d_attn_ctx_split = RAI_TENSOR_RESHAPE(d_attn_output.d_a, B, S, H, D_head);
 		RaiTensor d_attn_ctx_heads = rai_tensor_transpose(d_attn_ctx_split, 1, 2);
 
-		RaiBinOpGrad d_sdp = rai_tensor_matmul_t_grad(scratch_acts, scratch_acts, d_attn_ctx_heads, acts.blk[l].attn_probs, acts.blk[l].attn_v_heads_t);
+		RaiTensorBinOpGrad d_sdp = rai_tensor_matmul_t_grad(scratch_acts, scratch_acts, d_attn_ctx_heads, acts.blk[l].attn_probs, acts.blk[l].attn_v_heads_t);
 		RaiTensor d_attn_probs = d_sdp.d_a;
 		RaiTensor d_attn_v_heads_t = d_sdp.d_b;
 
@@ -2182,7 +2182,7 @@ RaiModel rai_engine_backward(
 		RaiTensor d_attn_scores = rai_tensor_softmax_grad(scratch_acts, d_attn_probs, acts.blk[l].attn_probs);
 		RaiTensor d_attn_qkt = rai_tensor_scale_grad(scratch_acts, d_attn_scores, scale);
 
-		RaiBinOpGrad d_qk = rai_tensor_matmul_t_grad(scratch_acts, scratch_acts, d_attn_qkt, acts.blk[l].attn_q_heads, acts.blk[l].attn_k_heads);
+		RaiTensorBinOpGrad d_qk = rai_tensor_matmul_t_grad(scratch_acts, scratch_acts, d_attn_qkt, acts.blk[l].attn_q_heads, acts.blk[l].attn_k_heads);
 		RaiTensor d_attn_q_heads = d_qk.d_a;
 		RaiTensor d_attn_k_heads = d_qk.d_b;
 
@@ -2194,19 +2194,19 @@ RaiModel rai_engine_backward(
 		RaiTensor d_attn_q = rai_tensor_rope_grad(scratch_acts, d_attn_q_rope, pos_offset, engine.model_config.rope_freq_base);
 		RaiTensor d_attn_k = rai_tensor_rope_grad(scratch_acts, d_attn_k_rope, pos_offset, engine.model_config.rope_freq_base);
 
-		RaiBinOpGrad d_q = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_q, acts.blk[l].attn_norm, engine.weights.blk[l].attn_q);
+		RaiTensorBinOpGrad d_q = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_q, acts.blk[l].attn_norm, engine.weights.blk[l].attn_q);
 		grads.blk[l].attn_q = d_q.d_b;
 
-		RaiBinOpGrad d_k = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_k, acts.blk[l].attn_norm, engine.weights.blk[l].attn_k);
+		RaiTensorBinOpGrad d_k = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_k, acts.blk[l].attn_norm, engine.weights.blk[l].attn_k);
 		grads.blk[l].attn_k = d_k.d_b;
 
-		RaiBinOpGrad d_v = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_v, acts.blk[l].attn_norm, engine.weights.blk[l].attn_v);
+		RaiTensorBinOpGrad d_v = rai_tensor_matmul_t_grad(scratch_acts, scratch_grads, d_attn_v, acts.blk[l].attn_norm, engine.weights.blk[l].attn_v);
 		grads.blk[l].attn_v = d_v.d_b;
 
 		RaiTensor d_attn_norm_in = rai_tensor_add(scratch_acts, d_q.d_a, d_k.d_a);
 		d_attn_norm_in = rai_tensor_add(scratch_acts, d_attn_norm_in, d_v.d_a);
 
-		RaiBinOpGrad d_attn_norm = rai_tensor_rmsnorm_grad(scratch_acts, scratch_grads, d_attn_norm_in, x_in, engine.weights.blk[l].attn_norm, engine.model_config.attention_layer_norm_rms_epsilon);
+		RaiTensorBinOpGrad d_attn_norm = rai_tensor_rmsnorm_grad(scratch_acts, scratch_grads, d_attn_norm_in, x_in, engine.weights.blk[l].attn_norm, engine.model_config.attention_layer_norm_rms_epsilon);
 		grads.blk[l].attn_norm = d_attn_norm.d_b;
 
 		d_x = rai_tensor_add(scratch_acts, d_x_attn_mid, d_attn_norm.d_a);
@@ -2499,10 +2499,10 @@ RaiMlpLayerGrad rai_mlp_layer_backward(
 	RaiMlpLayerGrad grad = { 0 };
 
 	RaiTensor d_sum = rai_tensor_silu_grad(scratch, d_out, acts.sum);
-	RaiBinOpGrad g_sum = rai_tensor_add_grad(scratch, arena, d_sum, acts.prod, layer.bias);
+	RaiTensorBinOpGrad g_sum = rai_tensor_add_grad(scratch, arena, d_sum, acts.prod, layer.bias);
 	RaiTensor d_prod = g_sum.d_a;
 	grad.d_bias = g_sum.d_b;
-	RaiBinOpGrad g_prod = rai_tensor_matmul_t_grad(scratch, arena, d_prod, in, layer.weight);
+	RaiTensorBinOpGrad g_prod = rai_tensor_matmul_t_grad(scratch, arena, d_prod, in, layer.weight);
 	grad.d_weight = g_prod.d_b;
 
 	return grad;

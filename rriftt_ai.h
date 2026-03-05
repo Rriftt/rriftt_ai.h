@@ -2479,6 +2479,7 @@ RaiMlpLayer rai_mlp_layer_alloc_randn(RaiArena* arena, size_t num_inputs, size_t
 
 RaiMlpLayerActs rai_mlp_layer_forward(RaiArena* arena, RaiMlpLayer layer, RaiTensor in) {
 	RaiMlpLayerActs acts = { 0 };
+
 	acts.prod = rai_tensor_matmul_t(arena, in, layer.weight);
 	acts.sum = rai_tensor_add(arena, acts.prod, layer.bias);
 	acts.out = rai_tensor_silu(arena, acts.sum);

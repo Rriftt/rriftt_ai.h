@@ -220,9 +220,11 @@ int main() {
 #define RAI_INFINITY INFINITY
 #endif // RAI_INFINITY
 
+// ------------------------- Math API ---------------------------------
 // PRNG - Gaussian Distribution
 float rai_randn(float mean, float std_dev);
 
+// ------------------------- Arena API ---------------------------------
 // Arena Allocator
 typedef struct {
 	size_t alloced_bytes;
@@ -235,6 +237,7 @@ void rai_arena_destroy(RaiArena *arena);
 void *rai_arena_alloc(RaiArena *arena, size_t size_bytes);
 void rai_arena_clear(RaiArena *arena);
 
+// ------------------------- Tensor API ---------------------------------
 // Tensors - The Atoms of Deep Learning
 #define RAI__TENSOR_MAXRANK 8
 typedef struct {
@@ -246,7 +249,6 @@ typedef struct {
 } RaiTensor;
 
 // Tensor functions
-// ------------------------- For Internal Use ---------------------------
 // Loggers
 void rai__tensor_print(RaiTensor t, int indent);
 
@@ -263,7 +265,6 @@ RaiTensor rai__tensor_subtensor(RaiTensor t, size_t idxs_len, size_t idxs[idxs_l
 #define RAI__NULL_TERMINATED_ARRAY(...) ((size_t[]){ __VA_OPT__(__VA_ARGS__, ) 0 })
 #define RAI__NULL_TERMINATED_ARRAY_LEN(...) (RAI__ARRAY_LEN(RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__)) - 1)
 
-// ------------------------- For External Use ----------------------------
 // Loggers
 void rai_tensor_info(RaiTensor t);
 #define RAI_TENSOR_PRINT(t) rai__tensor_print(t, 0)

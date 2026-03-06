@@ -288,6 +288,7 @@ RaiTensor rai_tensor_sub(RaiArena* arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_mul(RaiArena* arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_matmul_t(RaiArena* arena, RaiTensor a, RaiTensor b);
 RaiTensor rai_tensor_rmsnorm(RaiArena* arena, RaiTensor t, RaiTensor weight, float eps);
+float rai_tensor_mse(RaiTensor output, RaiTensor target);
 
 // Binary Operations Gradients
 typedef struct {
@@ -310,6 +311,8 @@ RaiTensor rai_tensor_silu(RaiArena* arena, RaiTensor t);
 RaiTensor rai_tensor_gelu(RaiArena* arena, RaiTensor t);
 RaiTensor rai_tensor_softmax(RaiArena* arena, RaiTensor t);
 RaiTensor rai_tensor_rope(RaiArena* arena, RaiTensor t, int start_idx, float theta_scale);
+float rai_tensor_mean(RaiTensor t);
+float rai_tensor_std_dev(RaiTensor t);
 
 // Unary Operations Gradients
 RaiTensor rai_tensor_scale_grad(RaiArena* arena, RaiTensor d_out, float scale);
@@ -336,15 +339,47 @@ typedef struct {
 RaiMlpLayerActs rai_mlp_layer_forward(RaiArena* arena, RaiMlpLayer layer, RaiTensor in);
 
 typedef struct {
-	RaiTensor d_weight;
 	RaiTensor d_bias;
-} RaiMlpLayerGrad;
+	RaiTensor d_weight;
+	RaiTensor d_in;
+} RaiMlpLayerGrads;
 
-RaiMlpLayerGrad rai_mlp_layer_backward(
+RaiMlpLayerGrads rai_mlp_layer_backward(
 	RaiArena* arena,
 	RaiArena* scratch,
 	RaiMlpLayer layer,
 	RaiMlpLayerActs acts,
+	RaiTensor d_out,
+	RaiTensor in
+);
+
+#define RAI_MLP_MAXLAYERCOUNT 8
+typedef struct {
+	size_t input_size;
+	size_t num_layers;
+	RaiMlpLayer layers[RAI_MLP_MAXLAYERCOUNT];
+} RaiMlp;
+
+RaiMlp rai__mlp_alloc_randn(RaiArena* arena, size_t input_size, size_t num_layers, size_t output_sizes[num_layers + 1]);
+#define RAI_MLP_ALLOC_RANDN(arena, input_size, ...) rai__mlp_alloc_randn(arena, input_size, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
+
+typedef struct {
+	size_t num_layers;
+	RaiMlpLayerActs layers[RAI_MLP_MAXLAYERCOUNT];
+} RaiMlpActs;
+
+RaiMlpActs rai_mlp_forward(RaiArena* arena, RaiMlp mlp, RaiTensor in);
+
+typedef struct {
+	size_t num_layers;
+	RaiMlpLayerGrads layers[RAI_MLP_MAXLAYERCOUNT];
+} RaiMlpGrads;
+
+RaiMlpGrads rai_mlp_backward(
+	RaiArena* arena,
+	RaiArena* scratch,
+	RaiMlp mlp,
+	RaiMlpActs acts,
 	RaiTensor d_out,
 	RaiTensor in
 );
@@ -2489,7 +2524,7 @@ RaiMlpLayerActs rai_mlp_layer_forward(RaiArena* arena, RaiMlpLayer layer, RaiTen
 	return acts;
 }
 
-RaiMlpLayerGrad rai_mlp_layer_backward(
+RaiMlpLayerGrads rai_mlp_layer_backward(
 	RaiArena* arena,
 	RaiArena* scratch,
 	RaiMlpLayer layer,
@@ -2498,16 +2533,179 @@ RaiMlpLayerGrad rai_mlp_layer_backward(
 	RaiTensor in
 )
 {
-	RaiMlpLayerGrad grad = { 0 };
+	RaiMlpLayerGrads grads = { 0 };
 
 	RaiTensor d_sum = rai_tensor_silu_grad(scratch, d_out, acts.sum);
 	RaiTensorBinOpGrad g_sum = rai_tensor_add_grad(scratch, arena, d_sum, acts.prod, layer.bias);
 	RaiTensor d_prod = g_sum.d_a;
-	grad.d_bias = g_sum.d_b;
+	grads.d_bias = g_sum.d_b;
 	RaiTensorBinOpGrad g_prod = rai_tensor_matmul_t_grad(scratch, arena, d_prod, in, layer.weight);
-	grad.d_weight = g_prod.d_b;
+	grads.d_in = g_prod.d_a;
+	grads.d_weight = g_prod.d_b;
 
-	return grad;
+	return grads;
+}
+
+RaiMlp rai__mlp_alloc_randn(RaiArena* arena, size_t input_size, size_t num_layers, size_t output_sizes[num_layers])
+{
+	RAI_ASSERT(num_layers <= RAI_MLP_MAXLAYERCOUNT && "number of layers exceeds RAI_MLP_MAXLAYERCOUNT");
+
+	RaiMlp mlp = { 0 };
+
+	mlp.input_size = input_size;
+	mlp.num_layers = num_layers;
+	for (size_t i = 0; i < num_layers; ++i) {
+		size_t in = i == 0 ? input_size : output_sizes[i - 1];
+		size_t out = output_sizes[i];
+		mlp.layers[i] = rai_mlp_layer_alloc_randn(arena, in, out);
+	}
+
+	return mlp;
+}
+
+float rai_tensor_mean(RaiTensor t)
+{
+	// This function will break on broadcasted tensors
+	float mean = 0.0f;
+
+	for (size_t i = 0; i < t.count; ++i) {
+		mean += t.data[i];
+	}
+
+	return mean / (float)t.count;
+}
+
+float rai_tensor_std_dev(RaiTensor t)
+{
+	// This function will break on broadcasted tensors
+	float mean = rai_tensor_mean(t);
+	float var = 0.0f;
+
+	for (size_t i = 0; i < t.count; ++i) {
+		float diff = (t.data[i] - mean);
+		var += diff * diff;
+	}
+	var /= (float)t.count;
+
+	return RAI_SQRTF(var);
+}
+
+RaiMlpActs rai_mlp_forward(RaiArena* arena, RaiMlp mlp, RaiTensor in)
+{
+	RaiMlpActs acts = { 0 };
+
+	acts.num_layers = mlp.num_layers;
+	for (size_t i = 0; i < mlp.num_layers; ++i) {
+		RaiTensor input = i == 0 ? in : acts.layers[i - 1].out;
+		acts.layers[i] = rai_mlp_layer_forward(arena, mlp.layers[i], input);
+	}
+
+	return acts;
+}
+
+RaiMlpGrads rai_mlp_backward(RaiArena* arena, RaiArena* scratch, RaiMlp mlp, RaiMlpActs acts, RaiTensor d_out, RaiTensor in)
+{
+	RaiMlpGrads grads = { 0 };
+
+	grads.num_layers = mlp.num_layers;
+	for (long i = grads.num_layers - 1; i >= 0; --i) {
+		RaiTensor d_output = (size_t)i == grads.num_layers - 1 ? d_out : grads.layers[i + 1].d_in;
+		RaiTensor input = (size_t)i == 0 ? in : acts.layers[i - 1].out;
+		grads.layers[i] = rai_mlp_layer_backward(arena, scratch, mlp.layers[i], acts.layers[i], d_output, input);
+	}
+
+	return grads;
+}
+
+static float rai__tensor_mse(RaiTensor output, RaiTensor target)
+{
+	if (output.rank <= 1) {
+		size_t len = output.count;
+		size_t s_out = output.strs[RAI__TENSOR_MAXRANK - 1];
+		size_t s_tar = target.strs[RAI__TENSOR_MAXRANK - 1];
+
+		float error = 0.0f;
+		for (size_t i = 0; i < len; ++i) {
+			float diff = output.data[i * s_out] - target.data[i * s_tar];
+			error += diff * diff;
+		}
+		return error / (float)len;
+	}
+
+	size_t current_dim = RAI__TENSOR_MAXRANK - output.rank;
+	size_t loop_count = output.dims[current_dim];
+
+	float error = 0.0f;
+	for (size_t i = 0; i < loop_count; ++i) {
+		error += rai__tensor_mse(
+			RAI_TENSOR_SUBTENSOR(output, i),
+			RAI_TENSOR_SUBTENSOR(target, i)
+		);
+	}
+
+	return error / (float)loop_count;
+}
+
+float rai_tensor_mse(RaiTensor output, RaiTensor target)
+{
+	RAI__TENSOR_BROADCAST_AND_PROMOTE(mse, output, target, RAI__TENSOR_MAXRANK);
+	return rai__tensor_mse(output, target);
+}
+
+static void rai__tensor_mse_grad(RaiTensor d_output, RaiTensor output, RaiTensor target)
+{
+	if (output.rank <= 1) {
+		size_t len = output.count;
+		size_t s_d_out = d_output.strs[RAI__TENSOR_MAXRANK - 1];
+		size_t s_out = output.strs[RAI__TENSOR_MAXRANK - 1];
+		size_t s_tar = target.strs[RAI__TENSOR_MAXRANK - 1];
+
+		for (size_t i = 0; i < len; ++i) {
+			float diff = output.data[i * s_out] - target.data[i * s_tar];
+			d_output.data[i * s_d_out] += 2 * diff / (float)len;
+		}
+
+		return;
+	}
+
+	size_t current_dim = RAI__TENSOR_MAXRANK - output.rank;
+	size_t loop_count = output.dims[current_dim];
+
+	for (size_t i = 0; i < loop_count; ++i) {
+		rai__tensor_mse_grad(
+			RAI_TENSOR_SUBTENSOR(d_output, i),
+			RAI_TENSOR_SUBTENSOR(output, i),
+			RAI_TENSOR_SUBTENSOR(target, i)
+		);
+	}
+}
+
+RaiTensor rai_tensor_mse_grad(RaiArena* arena, RaiTensor output, RaiTensor target)
+{
+	RaiTensor out_saved = output;
+	RAI__TENSOR_BROADCAST_AND_PROMOTE(MseGradIn, output, target, RAI__TENSOR_MAXRANK);
+	RaiTensor d_output = RAI_TENSOR_ALLOC_LIKE_FILL(arena, output, 0.0f);
+
+	rai__tensor_mse_grad(d_output, output, target);
+
+	return RAI_TENSOR_RESHAPE_LIKE(d_output, out_saved);
+}
+
+void rai_mlp_sgd(RaiArena* scratch, RaiMlp* mlp, RaiMlpGrads grads, float lr)
+{
+	for (size_t i = 0; i < mlp->num_layers; ++i) {
+		RaiTensor w = mlp->layers[i].weight;
+		RaiTensor b = mlp->layers[i].bias;
+
+		RaiTensor dw = grads.layers[i].d_weight;
+		RaiTensor db = grads.layers[i].d_bias;
+
+		RaiTensor dw_scaled = rai_tensor_scale(scratch, dw, lr);
+		RaiTensor db_scaled = rai_tensor_scale(scratch, db, lr);
+
+		rai__tensor_sub(w, w, dw_scaled);
+		rai__tensor_sub(b, b, db_scaled);
+	}
 }
 
 #endif // RRIFTT_AI_IMPLEMENTATION

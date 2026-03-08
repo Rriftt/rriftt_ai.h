@@ -1,3 +1,83 @@
+/* vim: set filetype=c: */
+
+// Flag for Development Mode
+#ifdef RAI__MODE_DEV
+#define RAI__FILE_README_MD
+#define RAI__FILE_LICENSE
+#define RRIFTT_AI_IMPLEMENTATION
+#endif // RAI__MODE_DEV
+
+#ifdef RAI__FILE_README_MD
+/*
+# rriftt_ai.h
+
+**A bare-metal, zero-dependency C23 neural network engine.**
+
+Modern deep learning is suffocating under layers of Python wrappers, 10GB toolchains, and CMake nightmares. `rriftt_ai.h` is a brutalist correction to the ecosystem. It is a single-header C library for building, training, and running Transformer models from scratch.
+
+No build systems. No external BLAS libraries. No hidden `malloc` calls during execution. Just drop the header into your project and compile.
+
+## The Visual Proof
+
+You do not need a supercomputer to allocate a tensor. Here is a fully functional AI memory arena and tensor operation in under 20 lines:
+
+```c
+#define RRIFTT_AI_IMPLEMENTATION
+#include "rriftt_ai.h"
+
+int main(void) {
+    // 1. Boot the memory arena (1MB)
+    RaiArena arena = rai_arena_create(1024 * 1024);
+
+    // 2. Allocate and fill two 2x2 tensors
+    RaiTensor A = RAI_TENSOR_ALLOC_FILL(&arena, 2.0f, 2, 2);
+    RaiTensor B = RAI_TENSOR_ALLOC_FILL(&arena, 3.0f, 2, 2);
+
+    // 3. Execute math
+    RaiTensor C = rai_tensor_add(&arena, A, B);
+
+    // 4. Verify
+    RAI_TENSOR_PRINT(C);
+
+    // 5. Vaporize all memory instantly
+    rai_arena_destroy(&arena);
+    return 0;
+}
+```
+
+Compile it with a standard compiler. No flags required other than linking the math library:
+```bash
+gcc main.c -o engine -lm
+./engine
+```
+
+## Architecture
+
+* **Arena Allocation (`RaiArena`):** Total control over memory. `rriftt_ai.h` never calls `malloc` or `free` during forward or backward passes. You pass it an arena, and it operates strictly within that perimeter.
+* **C23 Strict:** Mathematically tight, modern C architecture.
+* **The Full Transformer Stack:** Natively implements RoPE, RMSNorm, SwiGLU, and Scaled Dot-Product Attention without external dependencies.
+* **Training Engine Natively Included:** Full backpropagation routines, Cross-Entropy loss, and AdamW optimizer states are built directly into the C structs.
+* **Native BPE Tokenizer:** Train and execute Byte-Pair Encoding directly in C.
+
+## Integration
+
+Drop `rriftt_ai.h` into your directory. In **exactly one** C file, define the implementation macro before including:
+
+```c
+#define RRIFTT_AI_IMPLEMENTATION
+#include "rriftt_ai.h"
+```
+
+## Active Development
+
+This engine is a living architecture. It is under active development, and the foundation is built to scale. Pull requests, hardware-specific optimizations, and new feature implementations are heavily encouraged and actively reviewed. 
+
+## License
+
+Public Domain (Unlicense) or MIT. Choose whichever fits your system.
+*/
+#endif // RAI__FILE_README_MD
+
 /*
 rriftt_ai.h - v1.0 - public domain bare-metal AI library
 requires C23 or higher. no warranty implied; use at your own risk.
@@ -37,11 +117,11 @@ library adheres to the following conventions:
 
 - Types (Structs/Enums): PascalCase with 'Rai' prefix (e.g., RaiTensor, RaiArena)
 - Functions: snake_case with 'rai_' prefix (e.g., rai_tensor_add)
-- Macros: SCREAMING_SNAKE_CASE with 'RAI_' prefix (e.g., RAI_ASSERT)
+- Macros : SCREAMING_SNAKE_CASE with 'RAI_' prefix(e.g., RAI_ASSERT) * /
+*/
 
-============================================================================
-LICENSE
-============================================================================
+#ifdef RAI__FILE_LICENSE
+/*
 This software is available under 2 licenses -- choose whichever you prefer.
 
 ----------------------------------------------------------------------------
@@ -63,8 +143,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 ----------------------------------------------------------------------------
 ALTERNATIVE B - Public Domain (www.unlicense.org)
+
 This is free and unencumbered software released into the public domain.
 Anyone is free to copy, modify, publish, use, compile, sell, or distribute this
 software, either in source code form or as a compiled binary, for any purpose,
@@ -81,37 +163,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-----------------------------------------------------------------------------
 
-============================================================================
-QUICK START / EXAMPLE USAGE
-============================================================================
-
-#define RRIFTT_AI_IMPLEMENTATION
-#include "rriftt_ai.h"
-#include <stdio.h>
-
-int main() {
-	// 1. Create a 1MB memory arena
-	RaiArena arena = rai_arena_create(1024 * 1024);
-
-	// 2. Allocate two 2x2 tensors and fill them
-	RaiTensor A = RAI_TENSOR_ALLOC_FILL(&arena, 2.0f, 2, 2);
-	RaiTensor B = RAI_TENSOR_ALLOC_FILL(&arena, 3.0f, 2, 2);
-
-	// 3. Perform a mathematical operation
-	RaiTensor C = rai_tensor_add(&arena, A, B);
-
-	// 4. Print the result
-	RAI_TENSOR_PRINT(C);
-
-	// 5. Free all memory instantly
-	rai_arena_destroy(&arena);
-	return 0;
-}
-
-============================================================================
 */
+#endif // RAI__FILE_LICENSE
 
 #ifndef RRIFTT_AI_H
 #define RRIFTT_AI_H

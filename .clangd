@@ -6,7 +6,6 @@ CompileFlags:
     - -Wall
     - -Wextra
     - -Wpedantic
-    - -g
     - -D
-    - RRIFTT_AI_IMPLEMENTATION
+    - RAI__MODE_DEV
 

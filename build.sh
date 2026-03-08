@@ -15,7 +15,7 @@ echo "================================"
 for TEST_SRC in $TEST_SRCS; do
 	TEST_EXE=${TEST_SRC/.c/}
 	echo "Building  $TEST_EXE ..."
-	$CC $CFLAGS $LDFLAGS -o $TEST_EXE $TEST_SRC
+	$CC $CFLAGS -o $TEST_EXE $TEST_SRC $LDFLAGS
 	echo "Executing $TEST_EXE ..."
 	./$TEST_EXE > /dev/null
 	rm $TEST_EXE

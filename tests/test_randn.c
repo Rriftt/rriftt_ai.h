@@ -1,5 +1,6 @@
 #define RRIFTT_AI_IMPLEMENTATION
 #include "../rriftt_ai.h"
+
 #include <stdio.h>
 
 #define NUM_SAMPLES 1000000

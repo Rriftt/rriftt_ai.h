@@ -90,7 +90,7 @@ int main()
 		}
 
 		// Error Calc
-		float error = mse(P, Y); // scalar
+		// float error = mse(P, Y); // scalar
 		// printf("step = %4zu, error = %f\n", step, error);
 
 		// BackProp
@@ -115,7 +115,7 @@ int main()
 		RaiTensor dU0 = gV0.d_a;
 		RaiTensor dB0 = gV0.d_b;
 		RaiTensorBinOpGrad gU0 = rai_tensor_matmul_t_grad(&scratch_arena, &scratch_arena, dU0, X, W0);
-		RaiTensor dX = gU0.d_a;
+		// RaiTensor dX = gU0.d_a;
 		RaiTensor dW0 = gU0.d_b;
 
 		// Update

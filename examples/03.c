@@ -50,7 +50,7 @@ int main()
 		}
 
 		// Error Calc
-		float error = rai_tensor_mse(preds, target); // scalar
+		// float error = rai_tensor_mse(preds, target); // scalar
 		// printf("step = %4zu, error = %f\n", step, error);
 
 		// BackProp

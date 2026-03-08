@@ -76,7 +76,7 @@ int main()
 		}
 
 		// Error Calc
-		float error = mse(P, Y); // scalar
+		// float error = mse(P, Y); // scalar
 		// printf("step = %4zu, error = %f\n", step, error);
 
 		// BackProp

@@ -1,11 +1,16 @@
+If:
+  PathMatch: ".*\.h"
 CompileFlags:
   Add:
-    - -x
-    - c
-    - -std=c23
-    - -Wall
-    - -Wextra
-    - -Wpedantic
-    - -D
-    - RAI__MODE_DEV
+    - "-xc"
+    - "-std=c23"
+    - "-Wall"
+    - "-Wextra"
+    - "-Wpedantic"
+    - "-DRRIFTT_AI_IMPLEMENTATION"
+    - "-DRAI__FILE_README_MD"
+    - "-DRAI__FILE_LICENSE"
+
+    - "-DRAI__FILE_TESTS_TEST_ARENA_C"
+    # - "-DRAI__FILE_TESTS_TEST_RANDN_C"
 

@@ -1,6 +1,7 @@
-#include <time.h>
 #define RRIFTT_AI_IMPLEMENTATION
 #include "../rriftt_ai.h"
+
+#include <time.h>
 
 int main()
 {

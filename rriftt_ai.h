@@ -141,7 +141,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef RAI__FILE_DOCS_USAGE_GUIDE_MD
 /*
-# Overview
+## Overview
 
 `rriftt_ai.h` is a dependency-free, single-header C library for building, training,
 and running neural networks from scratch. It requires absolutely nothing but
@@ -161,7 +161,7 @@ before you include this file in *one* C file to create the implementation. i.e. 
 #include "rriftt_ai.h"
 ```
 
-## Public And Private API
+## Public and Private API
 
 You can safely interface with any Type, Macro, or Function starting with 
 `Rai`, `RAI_`, or `rai_`. These constitute the public API.

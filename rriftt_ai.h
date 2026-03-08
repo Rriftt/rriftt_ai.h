@@ -4,7 +4,7 @@
 /*
 # rriftt_ai.h
 
-**A single-header, zero-dependency C23 AI engine.**
+**A public-domain single-header, zero-dependency C23 AI engine.**
 
 Modern deep learning is suffocating under layers of Python wrappers, 10GB toolchains, and CMake nightmares. `rriftt_ai.h` is a brutalist correction to the ecosystem. It is a single-header C library for building, training, and running AI models from scratch.
 
@@ -92,48 +92,6 @@ Public Domain (Unlicense) or MIT. Choose whichever fits your system.
 */
 #endif // RAI__FILE_README_MD
 
-/*
-rriftt_ai.h - v1.0 - public domain bare-metal AI library
-requires C23 or higher. no warranty implied; use at your own risk.
-
-============================================================================
-OVERVIEW
-============================================================================
-rriftt_ai is a dependency-free, single-header C library for building, training,
-and running neural networks from scratch. It requires absolutely nothing but
-a standard C compiler to work. Everything else is in the source.
-
-Do this:
-#define RRIFTT_AI_IMPLEMENTATION
-before you include this file in *one* C file to create the implementation.
-
-// i.e. it should look like this:
-#include ...
-#include ...
-#define RRIFTT_AI_IMPLEMENTATION
-#include "rriftt_ai.h"
-
-============================================================================
-GENERAL USAGE GUIDE
-============================================================================
-You can safely interface with any Type, Macro, or Function starting with 
-Rai, RAI_, or rai_. These constitute the public API.
-
-DANGER: Avoid using anything starting with RAI__ or rai__ (two underscores). 
-These are strictly private internal functions and macros. Their behavior, 
-memory assumptions, and signatures will change without notice.
-
-============================================================================
-NAMING SCHEMES
-============================================================================
-To prevent namespace collisions and maintain strict C readability, this 
-library adheres to the following conventions:
-
-- Types (Structs/Enums): PascalCase with 'Rai' prefix (e.g., RaiTensor, RaiArena)
-- Functions: snake_case with 'rai_' prefix (e.g., rai_tensor_add)
-- Macros : SCREAMING_SNAKE_CASE with 'RAI_' prefix(e.g., RAI_ASSERT) * /
-*/
-
 #ifdef RAI__FILE_LICENSE
 /*
 This software is available under 2 licenses -- choose whichever you prefer.
@@ -180,6 +138,48 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
 #endif // RAI__FILE_LICENSE
+
+#ifdef RAI__FILE_DOCS_USAGE_GUIDE_MD
+/*
+# Overview
+
+`rriftt_ai.h` is a dependency-free, single-header C library for building, training,
+and running neural networks from scratch. It requires absolutely nothing but
+a standard C compiler to work. Everything else is in the source.
+
+Do this:
+
+```c
+#define RRIFTT_AI_IMPLEMENTATION
+```
+before you include this file in *one* C file to create the implementation. i.e. it should look like this:
+
+```c
+#include ...
+#include ...
+#define RRIFTT_AI_IMPLEMENTATION
+#include "rriftt_ai.h"
+```
+
+## Public And Private API
+
+You can safely interface with any Type, Macro, or Function starting with 
+`Rai`, `RAI_`, or `rai_`. These constitute the public API.
+
+**DANGER**: Avoid using anything starting with `RAI__` or `rai__` (two underscores). 
+These are strictly private internal functions and macros. Their behavior, 
+memory assumptions, and signatures will change without notice.
+
+## Naming Schemes
+
+To prevent namespace collisions and maintain strict C readability, this 
+library adheres to the following conventions:
+
+- **Types (Structs/Enums)**: `PascalCase` with `Rai` prefix (e.g., `RaiTensor`, `RaiArena`)
+- **Functions**: `snake_case` with `rai_` prefix (e.g., `rai_tensor_add`)
+- **Macros**: `SCREAMING_SNAKE_CASE` with `RAI_` prefix(e.g., `RAI_ASSERT`) 
+*/
+#endif // RAI__FILE_DOCS_USAGE_GUIDE_MD
 
 #ifndef RRIFTT_AI_H
 #define RRIFTT_AI_H

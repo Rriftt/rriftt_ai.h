@@ -2546,7 +2546,7 @@ RaiMlpLayerGrads rai_mlp_layer_backward(
 	return grads;
 }
 
-RaiMlp rai__mlp_alloc_randn(RaiArena* arena, size_t input_size, size_t num_layers, size_t output_sizes[num_layers])
+RaiMlp rai__mlp_alloc_randn(RaiArena* arena, size_t input_size, size_t num_layers, size_t output_sizes[num_layers + 1])
 {
 	RAI_ASSERT(num_layers <= RAI_MLP_MAXLAYERCOUNT && "number of layers exceeds RAI_MLP_MAXLAYERCOUNT");
 

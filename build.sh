@@ -1,8 +1,11 @@
 #!/bin/bash
+set -e
 
 CC=gcc
 CFLAGS="-std=c23 -Wall -Wextra -Wpedantic"
 LDFLAGS="-lm"
+
+shopt -s nullglob
 TEST_SRCS=tests/*.c
 EXAMPLE_SRCS=examples/*.c
 
@@ -15,16 +18,10 @@ for TEST_SRC in $TEST_SRCS; do
 	$CC $CFLAGS $LDFLAGS -o $TEST_EXE $TEST_SRC
 	echo "Executing $TEST_EXE ..."
 	./$TEST_EXE > /dev/null
-	if [ $? -ne 0 ]; then
-		echo "$TEST_EXE failed with exit code $?"
-		rm $TEST_EXE
-		exit
-	fi
 	rm $TEST_EXE
 done
 
 echo ""
-
 echo "================================"
 echo "  Building Examples             "
 echo "================================"
@@ -34,4 +31,9 @@ for EXAMPLE_SRC in $EXAMPLE_SRCS; do
 	$CC $CFLAGS $LDFLAGS -o $EXAMPLE_EXE $EXAMPLE_SRC
 	rm $EXAMPLE_EXE
 done
+
+echo ""
+echo "================================"
+echo "  All Tests Passed Successfully "
+echo "================================"
 

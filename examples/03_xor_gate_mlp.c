@@ -1,6 +1,7 @@
-#include <time.h>
 #define RRIFTT_AI_IMPLEMENTATION
 #include "../rriftt_ai.h"
+
+#include <time.h>
 
 int main()
 {
@@ -35,8 +36,8 @@ int main()
 	float eta = 0.1;
 	size_t max_steps = 10'000;
 
-	// MLP
-	RaiMlp mlp = RAI_MLP_ALLOC_RANDN(&perm_arena, 2, 2, 2);
+		// MLP
+		RaiMlp mlp = RAI_MLP_ALLOC_RANDN(&perm_arena, 2, 2, 2);
 	for (size_t step = 0; step < max_steps; ++step) {
 		// Forward Prop
 		RaiMlpActs acts = rai_mlp_forward(&scratch_arena, mlp, input);

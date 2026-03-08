@@ -4,6 +4,8 @@
 #ifdef RAI__MODE_DEV
 #define RAI__FILE_README_MD
 #define RAI__FILE_LICENSE
+#define RAI__FILE_TESTS_TEST_RANDN_C
+#define RAI__FILE_TESTS_TEST_ARENA_C
 #define RRIFTT_AI_IMPLEMENTATION
 #endif // RAI__MODE_DEV
 
@@ -95,6 +97,7 @@ While the API is subject to change, the core engine is heavily tested before eve
 ## License
 
 Public Domain (Unlicense) or MIT. Choose whichever fits your system.
+
 */
 #endif // RAI__FILE_README_MD
 
@@ -2783,3 +2786,42 @@ void rai_mlp_sgd(RaiArena* scratch, RaiMlp* mlp, RaiMlpGrads grads, float lr)
 }
 
 #endif // RRIFTT_AI_IMPLEMENTATION
+
+#ifdef RAI__FILE_TESTS_TEST_ARENA_C
+#include <stdio.h>
+#include <stdint.h>
+#include <stdalign.h>
+
+int main()
+{
+	size_t cap = 1024 * 1024; // 1MB
+	RaiArena arena = rai_arena_create(cap);
+
+	RAI_ASSERT(arena.memory_begin != nullptr);
+	RAI_ASSERT(arena.capacity_bytes >= cap);
+	RAI_ASSERT(arena.alloced_bytes == 0);
+
+	void* p1 = rai_arena_alloc(&arena, 13);
+	void* p2 = rai_arena_alloc(&arena, 7);
+	void* p3 = rai_arena_alloc(&arena, 64);
+
+	RAI_ASSERT((uintptr_t)p1 % alignof(max_align_t) == 0);
+	RAI_ASSERT((uintptr_t)p2 % alignof(max_align_t) == 0);
+	RAI_ASSERT((uintptr_t)p3 % alignof(max_align_t) == 0);
+
+	RAI_ASSERT((uint8_t*)p2 - (uint8_t*)p1 >= 13);
+	RAI_ASSERT((uint8_t*)p3 - (uint8_t*)p2 >= 7);
+
+	rai_arena_clear(&arena);
+	RAI_ASSERT(arena.alloced_bytes == 0);
+	RAI_ASSERT(arena.capacity_bytes >= cap);
+
+	rai_arena_destroy(&arena);
+	RAI_ASSERT(arena.memory_begin == nullptr);
+	RAI_ASSERT(arena.capacity_bytes == 0);
+	RAI_ASSERT(arena.alloced_bytes == 0);
+
+	printf("test_arena: OK\n");
+	return 0;
+}
+#endif // RAI__FILE_TESTS_TEST_ARENA_C

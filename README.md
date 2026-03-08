@@ -84,3 +84,4 @@ While the API is subject to change, the core engine is heavily tested before eve
 ## License
 
 Public Domain (Unlicense) or MIT. Choose whichever fits your system.
+

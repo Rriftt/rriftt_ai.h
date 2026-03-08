@@ -1,5 +1,6 @@
 #define RRIFTT_AI_IMPLEMENTATION
 #include "../rriftt_ai.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdalign.h>

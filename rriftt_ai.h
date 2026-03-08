@@ -680,7 +680,6 @@ RaiString rai_tokenizer_decode(
 	RaiTokenizer tok,
 	RaiTokenArray tokens
 );
-
 #endif // RRIFTT_AI_H
 
 #ifdef RAI__FILE_EXAMPLES_00_OR_GATE_C
@@ -1051,7 +1050,6 @@ int main()
 #endif // RAI__FILE_EXAMPLES_03_XOR_GATE_MLP_C
 
 #ifdef RRIFTT_AI_IMPLEMENTATION
-
 void rai_tensor_info(RaiTensor t)
 {
 	RAI_PRINTF("rank = %zu\n", t.rank);

@@ -29,7 +29,7 @@ BEGIN { extracting = 0; mode = ""; filepath = ""; depth = 0 }
     macro = $2
 
     # Strip RAI__FILE_ prefix, replace __ with /, replace last _ with .
-    filepath = substr(macro, 12)
+    filepath = substr(macro, 11)
     gsub(/__/, "/", filepath)
     match(filepath, /_[^_]*$/)
     if (RSTART > 0) {

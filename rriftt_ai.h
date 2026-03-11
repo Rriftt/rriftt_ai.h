@@ -90,8 +90,7 @@ Public Domain (Unlicense) or MIT. Choose whichever fits your system.
 
 ``` */
 
-#ifdef RAI__FILE_LICENSE
-/*
+/* ```markdown LICENSE
 This software is available under 2 licenses -- choose whichever you prefer.
 
 ----------------------------------------------------------------------------
@@ -134,11 +133,9 @@ AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-*/
-#endif // RAI__FILE_LICENSE
+``` */
 
-#ifdef RAI__FILE_DOCS_USAGE_GUIDE_MD
-/*
+/* ```markdown docs/usage_guide.md
 ## Overview
 
 `rriftt_ai.h` is a dependency-free, single-header C library for building, training,
@@ -176,8 +173,7 @@ library adheres to the following conventions:
 - **Types (Structs/Enums)**: `PascalCase` with `Rai` prefix (e.g., `RaiTensor`, `RaiArena`)
 - **Functions**: `snake_case` with `rai_` prefix (e.g., `rai_tensor_add`)
 - **Macros**: `SCREAMING_SNAKE_CASE` with `RAI_` prefix(e.g., `RAI_ASSERT`) 
-*/
-#endif // RAI__FILE_DOCS_USAGE_GUIDE_MD
+``` */
 
 #ifndef RAI__H
 #define RAI__H
@@ -190,8 +186,7 @@ library adheres to the following conventions:
 #error rriftt_ai.h does NOT lower its standards.
 #endif // __cplusplus
 
-#ifdef RAI__FILE_DOCS_LIBC_OVERRIDES_MD
-/*
+/* ```markdown docs/libc_overrides.md
 `rriftt_ai.h` does not depend on C libc at all. Hence the unconditional `#includes`s are only `<stddef.h>`, `<stdint.h>` and so on, aka those that must come with any standard-compliant C compiler as per the C23 standard.
 However, `rriftt_ai.h` does need memory allocations, math operations, assertions and so on. For these `rriftt_ai.h` uses libc out of the box, but wraps them in override macros. For example:
 
@@ -209,9 +204,8 @@ You can strip off dependency on libc by, for example, defining your own malloc l
 #include "rriftt_ai.h"
 ```
 
-Please see this section of the header for all overrideable libc dependencies.
-*/
-#endif // RAI__FILE_DOCS_LIBC_OVERRIDES_MD
+Please see this section of the header for all overrideable libc dependencies. You can literally search for this sentence in the header. It was generated from the main header only.
+``` */
 
 #include <stddef.h>
 #include <stdint.h>
@@ -310,19 +304,15 @@ Please see this section of the header for all overrideable libc dependencies.
 #endif // RAI_INFINITY
 
 // ------------------------- Math API ---------------------------------
-#ifdef RAI__FILE_DOCS_RAI_RANDN_MD
-/*
-```c
+/* ```markdown docs/math/rai_randn.md
+```c */
 float rai_randn(float mean, float std_dev);
-```
-
+/* ```
 * Pseudorandom numbers drawn from a Gaussian distribution centred around `mean` and having standard deviation `std_dev`.
 * Seeded by `RAI_SRAND()`.
 * Depends on `RAI_RAND()` for uniformly distributed pseudorandom number generation.
 * Employs **Box-Muller transform** on the uniform random numbers to generate normally distributed random numbers.
-*/
-#endif // RAI__FILE_DOCS_RAI_RANDN_MD
-float rai_randn(float mean, float std_dev);
+``` */
 
 // ------------------------- Arena API ---------------------------------
 // Arena Allocator

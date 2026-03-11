@@ -15,4 +15,4 @@ You can strip off dependency on libc by, for example, defining your own malloc l
 #include "rriftt_ai.h"
 ```
 
-Please see this section of the header for all overrideable libc dependencies.
+Please see this section of the header for all overrideable libc dependencies. You can literally search for this sentence in the header. It was generated from the main header only.

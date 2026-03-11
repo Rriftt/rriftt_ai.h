@@ -312,7 +312,7 @@ Please see this section of the header for all overrideable libc dependencies.
 #endif // RAI_INFINITY
 
 // ------------------------- Math API ---------------------------------
-#ifndef RAI__FILE_DOCS_RAI_RANDN_MD
+#ifdef RAI__FILE_DOCS_RAI_RANDN_MD
 /*
 # float rai_randn(float mean, float std_dev);
 

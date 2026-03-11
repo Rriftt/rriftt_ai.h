@@ -314,7 +314,9 @@ Please see this section of the header for all overrideable libc dependencies.
 // ------------------------- Math API ---------------------------------
 #ifdef RAI__FILE_DOCS_RAI_RANDN_MD
 /*
-# float rai_randn(float mean, float std_dev);
+```c
+float rai_randn(float mean, float std_dev);
+```
 
 * Pseudorandom numbers drawn from a Gaussian distribution centred around `mean` and having standard deviation `std_dev`.
 * Seeded by `RAI_SRAND()`.

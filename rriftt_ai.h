@@ -181,8 +181,8 @@ library adheres to the following conventions:
 */
 #endif // RAI__FILE_DOCS_USAGE_GUIDE_MD
 
-#ifndef RRIFTT_AI_H
-#define RRIFTT_AI_H
+#ifndef RAI__H
+#define RAI__H
 
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
 #error rriftt_ai.h requires at least C23. Please compile with -std=c2x or -std=c23.
@@ -714,7 +714,7 @@ RaiString rai_tokenizer_decode(
 	RaiTokenizer tok,
 	RaiTokenArray tokens
 );
-#endif // RRIFTT_AI_H
+#endif // RAI__H
 
 #ifdef RAI__FILE_EXAMPLES_00_OR_GATE_C
 float mse(RaiTensor preds, RaiTensor targets)

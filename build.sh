@@ -8,44 +8,79 @@ LDFLAGS="-lm"
 echo "================================"
 echo "  Extracting Resources          " 
 echo "================================"
-mkdir -p tests examples docs
 
 awk -v hdr="rriftt_ai.h" '
-/^#ifdef RAI__FILE_/ {
-    macro = $2
-    if (macro == "RAI__FILE_README_MD") { filepath = "README.md" }
-    else if (macro == "RAI__FILE_LICENSE") { filepath = "LICENSE" }
-    else {
-        filepath = tolower(substr(macro, 11))
-        if (filepath ~ /^tests_/) sub(/^tests_/, "tests/", filepath)
-        else if (filepath ~ /^examples_/) sub(/^examples_/, "examples/", filepath)
-        else if (filepath ~ /^docs_/) sub(/^docs_/, "docs/", filepath)
-        sub(/_c$/, ".c", filepath)
-        sub(/_md$/, ".md", filepath)
-    }
-    
+BEGIN { extracting = 0; mode = ""; filepath = ""; depth = 0 }
+
+# `@file` routing (markdown)
+/^[[:space:]]*\/\/[[:space:]]*@file[[:space:]]+/ && !extracting {
+    filepath = $3
+    mode = "file"
+
+    dir = filepath; if (sub(/\/[^\/]*$/, "", dir)) system("mkdir -p " dir)
     print "Extracting " filepath " ..."
-    
+
     extracting = 1
-    depth = 1
-    if (filepath ~ /\.c$/) {
-        print "#define RAI_IMPLEMENTATION" > filepath
-        print "#include \"../" hdr "\"" > filepath
-        print "" > filepath
-    }
     next
 }
+
+# `#ifdef` routing (C)
+/^#ifdef RAI__FILE_(TESTS|EXAMPLES)__/ && !extracting {
+    macro = $2
+
+    # Strip RAI__FILE_ prefix, replace __ with /, replace last _ with .
+    filepath = substr(macro, 12)
+    gsub(/__/, "/", filepath)
+    match(filepath, /_[^_]*$/)
+    if (RSTART > 0) {
+        filepath = substr(filepath, 1, RSTART-1) "." substr(filepath, RSTART+1)
+    }
+    filepath = tolower(filepath)
+
+    dir = filepath; if (sub(/\/[^\/]*$/, "", dir)) system("mkdir -p " dir)
+    print "Extracting " filepath " ..."
+
+    mode = "macro"
+    extracting = 1
+    depth = 1
+
+    # Inject C boilerplate
+    print "#define RAI_IMPLEMENTATION" > filepath
+    print "#include \"../" hdr "\"" > filepath
+    print "" > filepath
+    next
+}
+
+# Extracting content
 extracting {
-    if (/^[[:space:]]*#(if|ifdef|ifndef)/) { depth++ }
-    if (/^[[:space:]]*#endif/) {
-        depth--
-        if (depth == 0) { extracting = 0; close(filepath); next }
+    # Handle termination conditions based on the current mode
+    if (mode == "macro") {
+        if (/^[[:space:]]*#(if|ifdef|ifndef)/) { depth++ }
+        if (/^[[:space:]]*#endif/) {
+            depth--
+            if (depth == 0) {
+                extracting = 0
+                close(filepath)
+                next
+            }
+        }
+    } else if (mode == "file") {
+        if (/^[[:space:]]*\/\/[[:space:]]*@end/) {
+            extracting = 0
+            close(filepath)
+            next
+        }
     }
-    if ((filepath ~ /\.md$/ || filepath == "LICENSE" || filepath == "README.md") && ($0 ~ /^\/\*/ || $0 ~ /^\*\//)) {
-        next
-    }
+
+    # Strip polyglot C/Markdown wrappers
+    if ($0 ~ /^[[:space:]]*\/\*```c\*\//) { print "```c" > filepath; next }
+    if ($0 ~ /^[[:space:]]*\/\*```/)      { print "```" > filepath; next }
+    if ($0 ~ /^[[:space:]]*\*\/[[:space:]]*$/) { next }
+
+    # Dump raw content
     print $0 > filepath
-}' rriftt_ai.h
+}
+' rriftt_ai.h
 
 shopt -s nullglob
 TEST_SRCS=(tests/*.c)

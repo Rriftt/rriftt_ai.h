@@ -716,7 +716,7 @@ RaiString rai_tokenizer_decode(
 );
 #endif // RAI__H
 
-#ifdef RAI__FILE_EXAMPLES_00_OR_GATE_C
+#ifdef RAI__FILE_EXAMPLES__00_OR_GATE_C
 float mse(RaiTensor preds, RaiTensor targets)
 {
 	RAI_ASSERT(preds.count == targets.count && "Dimention Mismatch");
@@ -815,9 +815,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES_00_OR_GATE_C
+#endif // RAI__FILE_EXAMPLES__00_OR_GATE_C
 
-#ifdef RAI__FILE_EXAMPLES_01_XOR_GATE_C
+#ifdef RAI__FILE_EXAMPLES__01_XOR_GATE_C
 #include <time.h>
 
 float mse(RaiTensor preds, RaiTensor targets)
@@ -951,9 +951,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES_01_XOR_GATE_C
+#endif // RAI__FILE_EXAMPLES__01_XOR_GATE_C
 
-#ifdef RAI__FILE_EXAMPLES_02_LLM_OVERFIT_C
+#ifdef RAI__FILE_EXAMPLES__02_LLM_OVERFIT_C
 #include <stdio.h>
 
 int main()
@@ -1013,9 +1013,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES_02_LLM_OVERFIT_C
+#endif // RAI__FILE_EXAMPLES__02_LLM_OVERFIT_C
 
-#ifdef RAI__FILE_EXAMPLES_03_XOR_GATE_MLP_C
+#ifdef RAI__FILE_EXAMPLES__03_XOR_GATE_MLP_C
 #include <time.h>
 
 int main()
@@ -1081,7 +1081,7 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES_03_XOR_GATE_MLP_C
+#endif // RAI__FILE_EXAMPLES__03_XOR_GATE_MLP_C
 
 #ifdef RAI_IMPLEMENTATION
 void rai_tensor_info(RaiTensor t)
@@ -3176,7 +3176,7 @@ void rai_mlp_sgd(RaiArena* scratch, RaiMlp* mlp, RaiMlpGrads grads, float lr)
 }
 #endif // RAI_IMPLEMENTATION
 
-#ifdef RAI__FILE_TESTS_TEST_RANDN_C
+#ifdef RAI__FILE_TESTS__TEST_RANDN_C
 #include <stdio.h>
 
 #define NUM_SAMPLES 1000000
@@ -3235,9 +3235,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_TESTS_TEST_RANDN_C
+#endif // RAI__FILE_TESTS__TEST_RANDN_C
 
-#ifdef RAI__FILE_TESTS_TEST_ARENA_C
+#ifdef RAI__FILE_TESTS__TEST_ARENA_C
 #include <stdio.h>
 #include <stdint.h>
 #include <stdalign.h>
@@ -3274,9 +3274,9 @@ int main()
 	printf("test_arena: OK\n");
 	return 0;
 }
-#endif // RAI__FILE_TESTS_TEST_ARENA_C
+#endif // RAI__FILE_TESTS__TEST_ARENA_C
 
-#ifdef RAI__FILE_TESTS_TEST_TENSOR_C
+#ifdef RAI__FILE_TESTS__TEST_TENSOR_C
 #include <stdio.h>
 
 int main()
@@ -3329,9 +3329,9 @@ int main()
 	printf("test_tensor: OK\n");
 	return 0;
 }
-#endif // RAI__FILE_TESTS_TEST_TENSOR_C
+#endif // RAI__FILE_TESTS__TEST_TENSOR_C
 
-#ifdef RAI__FILE_TESTS_TEST_MATMUL_C
+#ifdef RAI__FILE_TESTS__TEST_MATMUL_C
 #include <stdio.h>
 
 int main()
@@ -3403,9 +3403,9 @@ int main()
 	printf("test_matmul: OK\n");
 	return 0;
 }
-#endif // RAI__FILE_TESTS_TEST_MATMUL_C
+#endif // RAI__FILE_TESTS__TEST_MATMUL_C
 
-#ifdef RAI__FILE_TESTS_TEST_MLP_C
+#ifdef RAI__FILE_TESTS__TEST_MLP_C
 #include <time.h>
 
 int main()
@@ -3488,4 +3488,4 @@ int main()
 	rai_arena_destroy(&scratch);
 	return 0;
 }
-#endif // RAI__FILE_TESTS_TEST_MLP_C
+#endif // RAI__FILE_TESTS__TEST_MLP_C

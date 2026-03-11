@@ -29,7 +29,7 @@ awk -v hdr="rriftt_ai.h" '
     extracting = 1
     depth = 1
     if (filepath ~ /\.c$/) {
-        print "#define RRIFTT_AI_IMPLEMENTATION" > filepath
+        print "#define RAI_IMPLEMENTATION" > filepath
         print "#include \"../" hdr "\"" > filepath
         print "" > filepath
     }

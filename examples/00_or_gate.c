@@ -1,4 +1,4 @@
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "../rriftt_ai.h"
 
 float mse(RaiTensor preds, RaiTensor targets)

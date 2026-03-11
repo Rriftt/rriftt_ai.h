@@ -27,7 +27,7 @@ The best documentation is the header itself. However, for convenience, standard 
 No build systems. No external BLAS libraries. No hidden `malloc` calls during execution. Just drop `rriftt_ai.h` into your directory. In **exactly one** C file, define the implementation macro before including:
 
 ```c
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "rriftt_ai.h"
 ```
 
@@ -36,7 +36,7 @@ No build systems. No external BLAS libraries. No hidden `malloc` calls during ex
 You do not need a supercomputer to do tensor math. Here is a fully functional AI memory arena and tensor operation in under 20 lines:
 
 ```c
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "rriftt_ai.h"
 
 int main(void) {
@@ -150,14 +150,14 @@ a standard C compiler to work. Everything else is in the source.
 Do this:
 
 ```c
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 ```
 before you include this file in *one* C file to create the implementation. i.e. it should look like this:
 
 ```c
 #include ...
 #include ...
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "rriftt_ai.h"
 ```
 
@@ -1083,7 +1083,7 @@ int main()
 }
 #endif // RAI__FILE_EXAMPLES_03_XOR_GATE_MLP_C
 
-#ifdef RRIFTT_AI_IMPLEMENTATION
+#ifdef RAI_IMPLEMENTATION
 void rai_tensor_info(RaiTensor t)
 {
 	RAI_PRINTF("rank = %zu\n", t.rank);
@@ -3174,7 +3174,7 @@ void rai_mlp_sgd(RaiArena* scratch, RaiMlp* mlp, RaiMlpGrads grads, float lr)
 		rai__tensor_sub(b, b, db_scaled);
 	}
 }
-#endif // RRIFTT_AI_IMPLEMENTATION
+#endif // RAI_IMPLEMENTATION
 
 #ifdef RAI__FILE_TESTS_TEST_RANDN_C
 #include <stdio.h>

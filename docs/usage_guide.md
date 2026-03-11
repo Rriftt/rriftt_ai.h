@@ -7,14 +7,14 @@ a standard C compiler to work. Everything else is in the source.
 Do this:
 
 ```c
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 ```
 before you include this file in *one* C file to create the implementation. i.e. it should look like this:
 
 ```c
 #include ...
 #include ...
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "rriftt_ai.h"
 ```
 

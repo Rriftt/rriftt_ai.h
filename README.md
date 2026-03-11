@@ -23,7 +23,7 @@ The best documentation is the header itself. However, for convenience, standard 
 No build systems. No external BLAS libraries. No hidden `malloc` calls during execution. Just drop `rriftt_ai.h` into your directory. In **exactly one** C file, define the implementation macro before including:
 
 ```c
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "rriftt_ai.h"
 ```
 
@@ -32,7 +32,7 @@ No build systems. No external BLAS libraries. No hidden `malloc` calls during ex
 You do not need a supercomputer to do tensor math. Here is a fully functional AI memory arena and tensor operation in under 20 lines:
 
 ```c
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "rriftt_ai.h"
 
 int main(void) {

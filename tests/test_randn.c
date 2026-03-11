@@ -1,4 +1,4 @@
-#define RRIFTT_AI_IMPLEMENTATION
+#define RAI_IMPLEMENTATION
 #include "../rriftt_ai.h"
 
 #include <stdio.h>

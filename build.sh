@@ -12,8 +12,8 @@ echo "================================"
 awk -v hdr="rriftt_ai.h" '
 BEGIN { extracting = 0; mode = ""; filepath = ""; depth = 0 }
 
-# `@file` routing (markdown)
-/^[[:space:]]*\/\/[[:space:]]*@file[[:space:]]+/ && !extracting {
+# Markdown routing (Native Fences)
+/^[[:space:]]*\/\*[[:space:]]*```markdown[[:space:]]+/ && !extracting {
     filepath = $3
     mode = "file"
 
@@ -24,7 +24,7 @@ BEGIN { extracting = 0; mode = ""; filepath = ""; depth = 0 }
     next
 }
 
-# `#ifdef` routing (C)
+# C routing (#ifdef tests & examples)
 /^#ifdef RAI__FILE_(TESTS|EXAMPLES)__/ && !extracting {
     macro = $2
 
@@ -65,17 +65,17 @@ extracting {
             }
         }
     } else if (mode == "file") {
-        if (/^[[:space:]]*\/\/[[:space:]]*@end/) {
+        # Check for Markdown end boundary
+        if (/^[[:space:]]*```[[:space:]]*\*\//) {
             extracting = 0
             close(filepath)
             next
         }
-    }
 
-    # Strip polyglot C/Markdown wrappers
-    if ($0 ~ /^[[:space:]]*\/\*```c\*\//) { print "```c" > filepath; next }
-    if ($0 ~ /^[[:space:]]*\/\*```/)      { print "```" > filepath; next }
-    if ($0 ~ /^[[:space:]]*\*\/[[:space:]]*$/) { next }
+        # Strip polyglot C/Markdown wrappers
+        if ($0 ~ /^[[:space:]]*```c[[:space:]]*\*\//) { print "```c" > filepath; next }
+        if ($0 ~ /^[[:space:]]*\/\*[[:space:]]*```[[:space:]]*$/) { print "```" > filepath; next }
+    }
 
     # Dump raw content
     print $0 > filepath

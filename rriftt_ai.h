@@ -1,7 +1,6 @@
 /* vim: set filetype=c: */
 
-#ifdef RAI__FILE_README_MD
-/*
+/* ```markdown README.md
 # rriftt_ai.h
 
 **A public-domain single-header, zero-dependency C23 AI engine.**
@@ -89,8 +88,7 @@ While the API is subject to change, the core engine is heavily tested before eve
 
 Public Domain (Unlicense) or MIT. Choose whichever fits your system.
 
-*/
-#endif // RAI__FILE_README_MD
+``` */
 
 #ifdef RAI__FILE_LICENSE
 /*

@@ -328,10 +328,41 @@ typedef struct {
  * `rriftt_ai.h` uses `RaiArena` for every allocation. A function/macro that allocates memory can be readily identified from the fact that it will accept `RaiArena *` as its first parameter.
 ``` */
 
+/* ```markdown docs/memory/rai_arena_create.md
+```c */
 RaiArena rai_arena_create(size_t capacity_bytes);
+/* ```
+ * Allocates an empty arena with `capacity_bytes` of capacity (aligned to `max_align_t`).
+ * Only function in this library that uses `RAI_MALLOC()`.
+ * Fails with `RAI_ASSERT()` if `RAI_MALLOC()` fails.
+ * Allocated arena can be freed with `rai_arena_destroy()`
+``` */
+
+/* ```markdown docs/memory/rai_arena_destroy.md
+```c */
 void rai_arena_destroy(RaiArena* arena);
+/* ```
+ * Frees arena `arena` rendering all allocations within it unusable.
+ * Only function in this library that uses `RAI_FREE()`.
+ * Zeroes out the `arena` struct to indicate it has been destroyed.
+``` */
+
+/* ```markdown docs/memory/rai_arena_alloc.md
+```c */
 void* rai_arena_alloc(RaiArena* arena, size_t size_bytes);
+/* ```
+ * Allocates `size_bytes` within `arena` (aligned to `max_align_t`).
+ * Fails with `RAI_ASSERT()` if `arena` is out of memory.
+ * Allocated memory is **not** zeroed out.
+``` */
+
+/* ```markdown docs/memory/rai_arena_clear.md
+```c */
 void rai_arena_clear(RaiArena* arena);
+/* ```
+ * Deallocates all the memory allocated by `rai_arena_alloc()`.
+ * Does not free the arena. Further calls to `rai_arena_alloc()` will overwrite previous allocations.
+``` */
 
 // ------------------------- Tensor API ---------------------------------
 // Tensors - The Atoms of Deep Learning

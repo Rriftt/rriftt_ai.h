@@ -366,6 +366,8 @@ void rai_arena_clear(RaiArena* arena);
 
 // ------------------------- Tensor API ---------------------------------
 // Tensors - The Atoms of Deep Learning
+/* ```markdown docs/tensors/RaiTensor.md
+```c */
 #define RAI__TENSOR_MAXRANK 8
 typedef struct {
 	size_t rank;
@@ -374,8 +376,16 @@ typedef struct {
 	size_t count;
 	float* data;
 } RaiTensor;
+/* ```
+ * `RaiTensor` is a row-major **view** into a contiguous block of memory used to store the `float` scalars.
+ * `rank` : rank of the tensor in question. 0 for scalar, 1 for vector, 2 for matrix and so on.
+ * `dims` : the right-aligned dimensions of the tensor.
+ * `strs` : the right-aligned strides across corresponding dimension.
+ * `count`: number of scalars in the tensor
+ * `data` : points to the beginning of the contiguous chunk of memory.
+``` */
 
-// Tensor functions
+// Tensor functions - Private API
 // Loggers
 void rai__tensor_print(RaiTensor t, int indent);
 
@@ -392,6 +402,7 @@ RaiTensor rai__tensor_subtensor(RaiTensor t, size_t idxs_len, size_t idxs[idxs_l
 #define RAI__NULL_TERMINATED_ARRAY(...) ((size_t[]){ __VA_OPT__(__VA_ARGS__, ) 0 })
 #define RAI__NULL_TERMINATED_ARRAY_LEN(...) (RAI__ARRAY_LEN(RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__)) - 1)
 
+// Tensor functions - Public API
 // Loggers
 void rai_tensor_info(RaiTensor t);
 #define RAI_TENSOR_PRINT(t) rai__tensor_print(t, 0)

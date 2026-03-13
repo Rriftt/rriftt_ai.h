@@ -1,5 +1,4 @@
 ```c
-#define RAI__TENSOR_MAXRANK 8
 typedef struct {
 	size_t rank;
 	size_t dims[RAI__TENSOR_MAXRANK];

@@ -304,7 +304,7 @@ Please see this section of the header for all overrideable libc dependencies. Yo
 #endif // RAI_INFINITY
 
 // ------------------------- Math API ---------------------------------
-/* ```markdown docs/math/rai_randn.md
+/* ```markdown docs/math/
 ```c */
 float rai_randn(float mean, float std_dev);
 /* ```
@@ -315,7 +315,7 @@ float rai_randn(float mean, float std_dev);
 ``` */
 
 // ------------------------- Arena API ---------------------------------
-/* ```markdown docs/memory/RaiArena.md
+/* ```markdown docs/memory/
 ```c */
 typedef struct {
 	size_t alloced_bytes;
@@ -328,7 +328,7 @@ typedef struct {
  * `rriftt_ai.h` uses `RaiArena` for every allocation. A function/macro that allocates memory can be readily identified from the fact that it will accept `RaiArena *` as its first parameter.
 ``` */
 
-/* ```markdown docs/memory/rai_arena_create.md
+/* ```markdown docs/memory/
 ```c */
 RaiArena rai_arena_create(size_t capacity_bytes);
 /* ```
@@ -338,7 +338,7 @@ RaiArena rai_arena_create(size_t capacity_bytes);
  * Allocated arena can be freed with `rai_arena_destroy()`.
 ``` */
 
-/* ```markdown docs/memory/rai_arena_destroy.md
+/* ```markdown docs/memory/
 ```c */
 void rai_arena_destroy(RaiArena* arena);
 /* ```
@@ -347,7 +347,7 @@ void rai_arena_destroy(RaiArena* arena);
  * Zeroes out the `arena` struct to indicate it has been destroyed.
 ``` */
 
-/* ```markdown docs/memory/rai_arena_alloc.md
+/* ```markdown docs/memory/
 ```c */
 void* rai_arena_alloc(RaiArena* arena, size_t size_bytes);
 /* ```
@@ -356,7 +356,7 @@ void* rai_arena_alloc(RaiArena* arena, size_t size_bytes);
  * Allocated memory is **not** zeroed out.
 ``` */
 
-/* ```markdown docs/memory/rai_arena_clear.md
+/* ```markdown docs/memory/
 ```c */
 void rai_arena_clear(RaiArena* arena);
 /* ```
@@ -366,9 +366,9 @@ void rai_arena_clear(RaiArena* arena);
 
 // ------------------------- Tensor API ---------------------------------
 // Tensors - The Atoms of Deep Learning
-/* ```markdown docs/tensors/RaiTensor.md
-```c */
 #define RAI__TENSOR_MAXRANK 8
+/* ```markdown docs/tensors/
+```c */
 typedef struct {
 	size_t rank;
 	size_t dims[RAI__TENSOR_MAXRANK];
@@ -405,7 +405,7 @@ RaiTensor rai__tensor_subtensor(RaiTensor t, size_t idxs_len, size_t idxs[idxs_l
 // Tensor functions - Public API
 // Loggers
 
-/* ```markdown docs/tensors/rai_tensor_info.md
+/* ```markdown docs/tensors/
 ```c */
 void rai_tensor_info(RaiTensor t);
 /* ```
@@ -413,7 +413,7 @@ void rai_tensor_info(RaiTensor t);
  * Metadata contains rank, dimensions, strides, count of scalars and pointer to the beginning of the data.
 ``` */
 
-/* ```markdown docs/tensors/RAI_TENSOR_PRINT.md
+/* ```markdown docs/tensors/
 ```c */
 #define RAI_TENSOR_PRINT(t) rai__tensor_print(t, 0)
 /* ```
@@ -423,7 +423,7 @@ void rai_tensor_info(RaiTensor t);
 ``` */
 
 // Allocators
-/* ```markdown docs/tensors/RAI_TENSOR_ALLOC.md
+/* ```markdown docs/tensors/
 ```c */
 #define RAI_TENSOR_ALLOC(arena, ...) rai__tensor_alloc(arena, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 /* ```
@@ -432,28 +432,28 @@ void rai_tensor_info(RaiTensor t);
  * Not providing any shape is well defined. In that case it allocates a scalar.
 ``` */
 
-/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_LIKE.md
+/* ```markdown docs/tensors/
 ```c */
 #define RAI_TENSOR_ALLOC_LIKE(arena, t) rai__tensor_alloc(arena, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
 /* ```
  * Allocates a tensor of the same shape as `t` in the given `arena`.
 ``` */
 
-/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_RANDN.md
+/* ```markdown docs/tensors/
 ```c */
 #define RAI_TENSOR_ALLOC_RANDN(arena, mean, std_dev, ...) rai__tensor_alloc_randn(arena, mean, std_dev, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 /* ```
  * Same as `RAI_TENSOR_ALLOC()`, but fills the tensor with numbers drawn from a normal distribution of mean `mean` and standard deviation `std_dev`.
 ``` */
 
-/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_FILL.md
+/* ```markdown docs/tensors/
 ```c */
 #define RAI_TENSOR_ALLOC_FILL(arena, fill, ...) rai__tensor_alloc_fill(arena, fill, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 /* ```
  * Same as `RAI_TENSOR_ALLOC()`, but fills the tensor with number specified by `fill`.
 ``` */
 
-/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_LIKE_FILL.md
+/* ```markdown docs/tensors/
 ```c */
 #define RAI_TENSOR_ALLOC_LIKE_FILL(arena, t, fill, ...) rai__tensor_alloc_fill(arena, fill, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
 /* ```

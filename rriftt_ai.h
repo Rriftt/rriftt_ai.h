@@ -404,15 +404,61 @@ RaiTensor rai__tensor_subtensor(RaiTensor t, size_t idxs_len, size_t idxs[idxs_l
 
 // Tensor functions - Public API
 // Loggers
+
+/* ```markdown docs/tensors/rai_tensor_info.md
+```c */
 void rai_tensor_info(RaiTensor t);
+/* ```
+ * Prints the metadata information about the tensor.
+ * Metadata contains rank, dimensions, strides, count of scalars and pointer to the beginning of the data.
+``` */
+
+/* ```markdown docs/tensors/RAI_TENSOR_PRINT.md
+```c */
 #define RAI_TENSOR_PRINT(t) rai__tensor_print(t, 0)
+/* ```
+ * Pretty-prints the tensor to the console.
+ * Depends on `<stdio.h>`.
+ * Use for debugging purposes. Do not use for large tensors because that will explode in your console.
+``` */
 
 // Allocators
+/* ```markdown docs/tensors/RAI_TENSOR_ALLOC.md
+```c */
 #define RAI_TENSOR_ALLOC(arena, ...) rai__tensor_alloc(arena, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
+/* ```
+ * Allocates a tesor of given shape in the given `arena`.
+ * Usage: `RAI_TENSOR_ALLOC(arena, 2, 3)` to allocate a $$2x3$$ matrix.
+ * Not providing any shape is well defined. In that case it allocates a scalar.
+``` */
+
+/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_LIKE.md
+```c */
 #define RAI_TENSOR_ALLOC_LIKE(arena, t) rai__tensor_alloc(arena, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
+/* ```
+ * Allocates a tensor of the same shape as `t` in the given `arena`.
+``` */
+
+/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_RANDN.md
+```c */
 #define RAI_TENSOR_ALLOC_RANDN(arena, mean, std_dev, ...) rai__tensor_alloc_randn(arena, mean, std_dev, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
+/* ```
+ * Same as `RAI_TENSOR_ALLOC()`, but fills the tensor with numbers drawn from a normal distribution of mean `mean` and standard deviation `std_dev`.
+``` */
+
+/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_FILL.md
+```c */
 #define RAI_TENSOR_ALLOC_FILL(arena, fill, ...) rai__tensor_alloc_fill(arena, fill, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
+/* ```
+ * Same as `RAI_TENSOR_ALLOC()`, but fills the tensor with number specified by `fill`.
+``` */
+
+/* ```markdown docs/tensors/RAI_TENSOR_ALLOC_LIKE_FILL.md
+```c */
 #define RAI_TENSOR_ALLOC_LIKE_FILL(arena, t, fill, ...) rai__tensor_alloc_fill(arena, fill, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
+/* ```
+ * Allocates a tensor of the same shape as `t` in the given `arena`. Then fills it with `fill`.
+``` */
 
 // View operations
 #define RAI_TENSOR_RESHAPE(t, ...) rai__tensor_reshape(t, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))

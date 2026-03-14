@@ -6,7 +6,7 @@ Modern deep learning is suffocating under layers of Python wrappers, 10GB toolch
 
 ## Single-Header
 
-`rriftt_ai.h` takes the concept of the legendary `nothings/stb` and `miniaudio.h` single-header libraries and pushes it to its absolute limit. In one header file it includes:
+`rriftt_ai.h` takes the concept of the legendary `nothings/stb` and `mackron/miniaudio` single-header libraries and pushes it to its absolute limit. In one header file it includes:
 * this README
 * LICENSE
 * Usage Guides

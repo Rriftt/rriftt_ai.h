@@ -3,7 +3,7 @@
 /* ```markdown README.md
 # rriftt_ai.h
 
-**A public-domain single-header, zero-dependency C23 AI engine.**
+**A public-domain single-header zero-dependency C23 AI engine.**
 
 Modern deep learning is suffocating under layers of Python wrappers, 10GB toolchains, and CMake nightmares. `rriftt_ai.h` is a brutalist correction to the ecosystem. It is a single-header C library for building, training, and running AI models from scratch.
 

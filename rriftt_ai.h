@@ -304,7 +304,7 @@ Please see this section of the header for all overrideable libc dependencies. Yo
 #endif // RAI_INFINITY
 
 /** module_exclusion.md
-You can exclude any module by #defining `RAI_NO_<MODULE_NAME>` before #including `rriftt_ai.h`:
+You can exclude any module by `#define`ing `RAI_NO_<MODULE_NAME>` before `#include`ing `rriftt_ai.h`:
 
 ```c
 #define RAI_NO_MATH

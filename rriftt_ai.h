@@ -1,6 +1,6 @@
 /* vim: set filetype=c: */
 
-/* ```markdown README.md
+/** README.md
 # rriftt_ai.h
 
 **A public-domain single-header zero-dependency C23 AI engine.**
@@ -19,7 +19,7 @@ Modern deep learning is suffocating under layers of Python wrappers, 10GB toolch
 * Private Implementation
 * Tests
 
-The best documentation is the header itself. However, for convenience, standard documentation files are provided — these are automatically extracted directly from the header using the included `build.sh`.
+The best documentation is the header itself. However, for convenience, standard documentation files are provided — these are automatically extracted directly from the header.
 
 ## Integration
 
@@ -87,10 +87,9 @@ While the API is subject to change, the core engine is heavily tested before eve
 ## License
 
 Public Domain (Unlicense) or MIT. Choose whichever fits your system.
+*/
 
-``` */
-
-/* ```markdown LICENSE
+/** LICENSE
 This software is available under 2 licenses -- choose whichever you prefer.
 
 ----------------------------------------------------------------------------
@@ -132,10 +131,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
 ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
 
-``` */
-
-/* ```markdown docs/usage_guide.md
+/** docs/usage_guide.md
 ## Overview
 
 `rriftt_ai.h` is a dependency-free, single-header C library for building, training,
@@ -173,7 +171,7 @@ library adheres to the following conventions:
 - **Types (Structs/Enums)**: `PascalCase` with `Rai` prefix (e.g., `RaiTensor`, `RaiArena`)
 - **Functions**: `snake_case` with `rai_` prefix (e.g., `rai_tensor_add`)
 - **Macros**: `SCREAMING_SNAKE_CASE` with `RAI_` prefix(e.g., `RAI_ASSERT`) 
-``` */
+*/
 
 #ifndef RAI__H
 #define RAI__H
@@ -186,7 +184,7 @@ library adheres to the following conventions:
 #error rriftt_ai.h does NOT lower its standards.
 #endif // __cplusplus
 
-/* ```markdown docs/libc_overrides.md
+/** docs/libc_overrides.md
 `rriftt_ai.h` does not depend on C libc at all. Hence the unconditional `#includes`s are only `<stddef.h>`, `<stdint.h>` and so on, aka those that must come with any standard-compliant C compiler as per the C23 standard.
 However, `rriftt_ai.h` does need memory allocations, math operations, assertions and so on. For these `rriftt_ai.h` uses libc out of the box, but wraps them in override macros. For example:
 
@@ -205,7 +203,7 @@ You can strip off dependency on libc by, for example, defining your own malloc l
 ```
 
 Please see this section of the header for all overrideable libc dependencies. You can literally search for this sentence in the header. It was generated from the main header only.
-``` */
+*/
 
 #include <stddef.h>
 #include <stdint.h>
@@ -303,72 +301,107 @@ Please see this section of the header for all overrideable libc dependencies. Yo
 #define RAI_INFINITY INFINITY
 #endif // RAI_INFINITY
 
-// ------------------------- Math API ---------------------------------
-/* ```markdown docs/math/
-```c */
-float rai_randn(float mean, float std_dev);
-/* ```
+/** docs/module_exclusion.md
+You can exclude any module by #defining `RAI_NO_<MODULE_NAME>` before #including `rriftt_ai.h`:
+
+```c
+#define RAI_NO_MATH
+#define RAI_IMPLEMENTATION
+#include "rriftt_ai.h"
+```
+
+But be aware, these modules are interdependent.
+*/
+
+#ifndef RAI_NO_MATH
+#define RAI__DIR_MATH
+#endif // RAI_NO_MATH
+
+#ifndef RAI_NO_MEMORY
+#define RAI__DIR_MEMORY
+#endif // RAI_NO_MEMORY
+
+#ifndef RAI_NO_TENSORS
+#define RAI__DIR_TENSORS
+#endif // RAI_NO_TENSORS
+
+#ifndef RAI_NO_ALLOCATORS
+#define RAI__DIR_ALLOCATORS
+#endif // RAI_NO_ALLOCATORS
+
+#ifndef RAI_NO_LOGGERS
+#define RAI__DIR_LOGGERS
+#endif // RAI_NO_LOGGERS
+
+#define RAI__DIR_DOCS
+#ifdef RAI__DIR_DOCS
+
+#ifdef RAI__DIR_MATH
+
+/**
  * Pseudorandom numbers drawn from a Gaussian distribution centred around `mean` and having standard deviation `std_dev`.
  * Seeded by `RAI_SRAND()`.
  * Depends on `RAI_RAND()` for uniformly distributed pseudorandom number generation.
  * Employs **Box-Muller transform** on the uniform random numbers to generate normally distributed random numbers.
-``` */
+ */
+float rai_randn(float mean, float std_dev);
 
-// ------------------------- Arena API ---------------------------------
-/* ```markdown docs/memory/
-```c */
+#endif // RAI__DIR_MATH
+
+#ifdef RAI__DIR_MEMORY
+
+/**
+ * Arena Allocator / Linear Allocator / Bump Allocator / Region Allocator
+ * Used for requesting a chunk of memory using `RAI_MALLOC()` and allocating linearly inside it.
+ * `rriftt_ai.h` uses `RaiArena` for every allocation. A function/macro that allocates memory can be readily identified from the fact that it will accept `RaiArena *` as its first parameter.
+ */
 typedef struct {
 	size_t alloced_bytes;
 	size_t capacity_bytes;
 	void* memory_begin;
 } RaiArena;
-/* ```
- * Arena Allocator / Linear Allocator / Bump Allocator / Region Allocator
- * Used for requesting a chunk of memory using `RAI_MALLOC()` and allocating linearly inside it.
- * `rriftt_ai.h` uses `RaiArena` for every allocation. A function/macro that allocates memory can be readily identified from the fact that it will accept `RaiArena *` as its first parameter.
-``` */
 
-/* ```markdown docs/memory/
-```c */
-RaiArena rai_arena_create(size_t capacity_bytes);
-/* ```
+/**
  * Allocates an empty arena with `capacity_bytes` of capacity (aligned to `max_align_t`).
  * Only function in this library that uses `RAI_MALLOC()`.
  * Fails with `RAI_ASSERT()` if `RAI_MALLOC()` fails.
  * Allocated arena can be freed with `rai_arena_destroy()`.
-``` */
+ */
+RaiArena rai_arena_create(size_t capacity_bytes);
 
-/* ```markdown docs/memory/
-```c */
-void rai_arena_destroy(RaiArena* arena);
-/* ```
+/**
  * Frees arena `arena` rendering all allocations within it unusable.
  * Only function in this library that uses `RAI_FREE()`.
  * Zeroes out the `arena` struct to indicate it has been destroyed.
-``` */
+ */
+void rai_arena_destroy(RaiArena* arena);
 
-/* ```markdown docs/memory/
-```c */
-void* rai_arena_alloc(RaiArena* arena, size_t size_bytes);
-/* ```
+/**
  * Allocates `size_bytes` within `arena` (aligned to `max_align_t`).
  * Fails with `RAI_ASSERT()` if `arena` is out of memory.
  * Allocated memory is **not** zeroed out.
-``` */
+ */
+void* rai_arena_alloc(RaiArena* arena, size_t size_bytes);
 
-/* ```markdown docs/memory/
-```c */
-void rai_arena_clear(RaiArena* arena);
-/* ```
+/**
  * Deallocates all the memory allocated by `rai_arena_alloc()`.
  * Does not free the arena. Further calls to `rai_arena_alloc()` will overwrite previous allocations.
-``` */
+ */
+void rai_arena_clear(RaiArena* arena);
 
-// ------------------------- Tensor API ---------------------------------
-// Tensors - The Atoms of Deep Learning
+#endif // RAI__DIR_MEMORY
+
+#ifdef RAI__DIR_TENSORS
+
+/** RaiTensor.md
+ * `RaiTensor` is a row-major **view** into a contiguous block of memory used to store the `float` scalars.
+ * `rank` : rank of the tensor in question. 0 for scalar, 1 for vector, 2 for matrix and so on.
+ * `dims` : the right-aligned dimensions of the tensor.
+ * `strs` : the right-aligned strides across corresponding dimension.
+ * `count`: number of scalars in the tensor
+ * `data` : points to the beginning of the contiguous chunk of memory.
+ */
 #define RAI__TENSOR_MAXRANK 8
-/* ```markdown docs/tensors/
-```c */
 typedef struct {
 	size_t rank;
 	size_t dims[RAI__TENSOR_MAXRANK];
@@ -376,14 +409,6 @@ typedef struct {
 	size_t count;
 	float* data;
 } RaiTensor;
-/* ```
- * `RaiTensor` is a row-major **view** into a contiguous block of memory used to store the `float` scalars.
- * `rank` : rank of the tensor in question. 0 for scalar, 1 for vector, 2 for matrix and so on.
- * `dims` : the right-aligned dimensions of the tensor.
- * `strs` : the right-aligned strides across corresponding dimension.
- * `count`: number of scalars in the tensor
- * `data` : points to the beginning of the contiguous chunk of memory.
-``` */
 
 // Tensor functions - Private API
 // Loggers
@@ -403,62 +428,58 @@ RaiTensor rai__tensor_subtensor(RaiTensor t, size_t idxs_len, size_t idxs[idxs_l
 #define RAI__NULL_TERMINATED_ARRAY_LEN(...) (RAI__ARRAY_LEN(RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__)) - 1)
 
 // Tensor functions - Public API
-// Loggers
 
-/* ```markdown docs/tensors/
-```c */
-void rai_tensor_info(RaiTensor t);
-/* ```
+#ifdef RAI__DIR_LOGGERS
+
+/**
  * Prints the metadata information about the tensor.
  * Metadata contains rank, dimensions, strides, count of scalars and pointer to the beginning of the data.
-``` */
+ */
+void rai_tensor_info(RaiTensor t);
 
-/* ```markdown docs/tensors/
-```c */
-#define RAI_TENSOR_PRINT(t) rai__tensor_print(t, 0)
-/* ```
+/**
  * Pretty-prints the tensor to the console.
  * Depends on `<stdio.h>`.
  * Use for debugging purposes. Do not use for large tensors because that will explode in your console.
-``` */
+ */
+#define RAI_TENSOR_PRINT(t) rai__tensor_print(t, 0)
 
-// Allocators
-/* ```markdown docs/tensors/
-```c */
-#define RAI_TENSOR_ALLOC(arena, ...) rai__tensor_alloc(arena, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
-/* ```
+#endif // RAI__DIR_LOGGERS
+
+#ifdef RAI__DIR_ALLOCATORS
+
+/**
  * Allocates a tesor of given shape in the given `arena`.
  * Usage: `RAI_TENSOR_ALLOC(arena, 2, 3)` to allocate a $$2x3$$ matrix.
  * Not providing any shape is well defined. In that case it allocates a scalar.
-``` */
+ */
+#define RAI_TENSOR_ALLOC(arena, ...) rai__tensor_alloc(arena, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 
-/* ```markdown docs/tensors/
-```c */
-#define RAI_TENSOR_ALLOC_LIKE(arena, t) rai__tensor_alloc(arena, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
-/* ```
+/**
  * Allocates a tensor of the same shape as `t` in the given `arena`.
-``` */
+ */
+#define RAI_TENSOR_ALLOC_LIKE(arena, t) rai__tensor_alloc(arena, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
 
-/* ```markdown docs/tensors/
-```c */
-#define RAI_TENSOR_ALLOC_RANDN(arena, mean, std_dev, ...) rai__tensor_alloc_randn(arena, mean, std_dev, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
-/* ```
+/**
  * Same as `RAI_TENSOR_ALLOC()`, but fills the tensor with numbers drawn from a normal distribution of mean `mean` and standard deviation `std_dev`.
-``` */
+ */
+#define RAI_TENSOR_ALLOC_RANDN(arena, mean, std_dev, ...) rai__tensor_alloc_randn(arena, mean, std_dev, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 
-/* ```markdown docs/tensors/
-```c */
-#define RAI_TENSOR_ALLOC_FILL(arena, fill, ...) rai__tensor_alloc_fill(arena, fill, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
-/* ```
+/**
  * Same as `RAI_TENSOR_ALLOC()`, but fills the tensor with number specified by `fill`.
-``` */
+ */
+#define RAI_TENSOR_ALLOC_FILL(arena, fill, ...) rai__tensor_alloc_fill(arena, fill, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 
-/* ```markdown docs/tensors/
-```c */
-#define RAI_TENSOR_ALLOC_LIKE_FILL(arena, t, fill, ...) rai__tensor_alloc_fill(arena, fill, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
-/* ```
+/**
  * Allocates a tensor of the same shape as `t` in the given `arena`. Then fills it with `fill`.
-``` */
+ */
+#define RAI_TENSOR_ALLOC_LIKE_FILL(arena, t, fill, ...) rai__tensor_alloc_fill(arena, fill, (t).rank, (t).dims + RAI__TENSOR_MAXRANK - (t).rank)
+
+#endif // RAI__DIR_ALLOCATORS
+
+#endif // RAI__DIR_TENSORS
+
+#endif // RAI__DIR_DOCS
 
 // View operations
 #define RAI_TENSOR_RESHAPE(t, ...) rai__tensor_reshape(t, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
@@ -798,7 +819,8 @@ RaiString rai_tokenizer_decode(
 );
 #endif // RAI__H
 
-#ifdef RAI__FILE_EXAMPLES__00_OR_GATE_C
+#ifdef RAI__DIR_EXAMPLES
+#ifdef RAI__FILE_00_OR_GATE_C
 float mse(RaiTensor preds, RaiTensor targets)
 {
 	RAI_ASSERT(preds.count == targets.count && "Dimention Mismatch");
@@ -897,9 +919,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES__00_OR_GATE_C
+#endif // RAI__FILE_00_OR_GATE_C
 
-#ifdef RAI__FILE_EXAMPLES__01_XOR_GATE_C
+#ifdef RAI__FILE_01_XOR_GATE_C
 #include <time.h>
 
 float mse(RaiTensor preds, RaiTensor targets)
@@ -1033,9 +1055,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES__01_XOR_GATE_C
+#endif // RAI__FILE_01_XOR_GATE_C
 
-#ifdef RAI__FILE_EXAMPLES__02_LLM_OVERFIT_C
+#ifdef RAI__FILE_02_LLM_OVERFIT_C
 #include <stdio.h>
 
 int main()
@@ -1095,9 +1117,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES__02_LLM_OVERFIT_C
+#endif // RAI__FILE_02_LLM_OVERFIT_C
 
-#ifdef RAI__FILE_EXAMPLES__03_XOR_GATE_MLP_C
+#ifdef RAI__FILE_03_XOR_GATE_MLP_C
 #include <time.h>
 
 int main()
@@ -1163,7 +1185,8 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_EXAMPLES__03_XOR_GATE_MLP_C
+#endif // RAI__FILE_03_XOR_GATE_MLP_C
+#endif // RAI__DIR_EXAMPLES
 
 #ifdef RAI_IMPLEMENTATION
 void rai_tensor_info(RaiTensor t)
@@ -3258,7 +3281,8 @@ void rai_mlp_sgd(RaiArena* scratch, RaiMlp* mlp, RaiMlpGrads grads, float lr)
 }
 #endif // RAI_IMPLEMENTATION
 
-#ifdef RAI__FILE_TESTS__TEST_RANDN_C
+#ifdef RAI__DIR_TESTS
+#ifdef RAI__FILE_TEST_RANDN_C
 #include <stdio.h>
 
 #define NUM_SAMPLES 1000000
@@ -3317,9 +3341,9 @@ int main()
 
 	return 0;
 }
-#endif // RAI__FILE_TESTS__TEST_RANDN_C
+#endif // RAI__FILE_TEST_RANDN_C
 
-#ifdef RAI__FILE_TESTS__TEST_ARENA_C
+#ifdef RAI__FILE_TEST_ARENA_C
 #include <stdio.h>
 #include <stdint.h>
 #include <stdalign.h>
@@ -3356,9 +3380,9 @@ int main()
 	printf("test_arena: OK\n");
 	return 0;
 }
-#endif // RAI__FILE_TESTS__TEST_ARENA_C
+#endif // RAI__FILE_TEST_ARENA_C
 
-#ifdef RAI__FILE_TESTS__TEST_TENSOR_C
+#ifdef RAI__FILE_TEST_TENSOR_C
 #include <stdio.h>
 
 int main()
@@ -3411,9 +3435,9 @@ int main()
 	printf("test_tensor: OK\n");
 	return 0;
 }
-#endif // RAI__FILE_TESTS__TEST_TENSOR_C
+#endif // RAI__FILE_TEST_TENSOR_C
 
-#ifdef RAI__FILE_TESTS__TEST_MATMUL_C
+#ifdef RAI__FILE_TEST_MATMUL_C
 #include <stdio.h>
 
 int main()
@@ -3485,9 +3509,9 @@ int main()
 	printf("test_matmul: OK\n");
 	return 0;
 }
-#endif // RAI__FILE_TESTS__TEST_MATMUL_C
+#endif // RAI__FILE_TEST_MATMUL_C
 
-#ifdef RAI__FILE_TESTS__TEST_MLP_C
+#ifdef RAI__FILE_TEST_MLP_C
 #include <time.h>
 
 int main()
@@ -3570,4 +3594,5 @@ int main()
 	rai_arena_destroy(&scratch);
 	return 0;
 }
-#endif // RAI__FILE_TESTS__TEST_MLP_C
+#endif // RAI__FILE_TEST_MLP_C
+#endif // RAI__DIR_TESTS

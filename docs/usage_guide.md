@@ -23,7 +23,7 @@ before you include this file in *one* C file to create the implementation. i.e. 
 You can safely interface with any Type, Macro, or Function starting with 
 `Rai`, `RAI_`, or `rai_`. These constitute the public API.
 
-**DANGER**: Avoid using anything starting with `RAI__` or `rai__` (two underscores). 
+*DANGER**: Avoid using anything starting with `RAI__` or `rai__` (two underscores). 
 These are strictly private internal functions and macros. Their behavior, 
 memory assumptions, and signatures will change without notice.
 
@@ -35,3 +35,4 @@ library adheres to the following conventions:
 - **Types (Structs/Enums)**: `PascalCase` with `Rai` prefix (e.g., `RaiTensor`, `RaiArena`)
 - **Functions**: `snake_case` with `rai_` prefix (e.g., `rai_tensor_add`)
 - **Macros**: `SCREAMING_SNAKE_CASE` with `RAI_` prefix(e.g., `RAI_ASSERT`) 
+

@@ -1,5 +1,5 @@
 * Allocates a tesor of given shape in the given `arena`.
-* Usage: `RAI_TENSOR_ALLOC(arena, 2, 3)` to allocate a $$2x3$$ matrix.
+* Usage: `RAI_TENSOR_ALLOC(arena, 2, 3)` to allocate a $$2$$x$$3$$ matrix.
 * Not providing any shape is well defined. In that case it allocates a scalar.
 
 ```c

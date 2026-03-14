@@ -335,6 +335,10 @@ But be aware, these modules are interdependent.
 #define RAI__DIR_LOGGERS
 #endif // RAI_NO_LOGGERS
 
+#ifndef RAI_NO_VIEW_OPERATIONS
+#define RAI__DIR_VIEW_OPERATIONS
+#endif // RAI_NO_VIEW_OPERATIONS
+
 #ifdef RAI__DIR_MATH
 
 /**
@@ -449,7 +453,7 @@ void rai_tensor_info(RaiTensor t);
 
 /**
  * Allocates a tesor of given shape in the given `arena`.
- * Usage: `RAI_TENSOR_ALLOC(arena, 2, 3)` to allocate a $$2x3$$ matrix.
+ * Usage: `RAI_TENSOR_ALLOC(arena, 2, 3)` to allocate a $$2$$x$$3$$ matrix.
  * Not providing any shape is well defined. In that case it allocates a scalar.
  */
 #define RAI_TENSOR_ALLOC(arena, ...) rai__tensor_alloc(arena, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
@@ -476,13 +480,20 @@ void rai_tensor_info(RaiTensor t);
 
 #endif // RAI__DIR_ALLOCATORS
 
-#endif // RAI__DIR_TENSORS
+#ifdef RAI__DIR_VIEW_OPERATIONS
 
-// View operations
+/**
+ * Reshapes the given tensor the given shape, without copying the underlying data.
+ * Usage: If t is a $$2$$x$$3$$ matrix, `RAI_TENSOR_RESHAPE(t, 6)` will **view** it as a vector of dimention $$6$$.
+ * Fails via `RAI_ASSERT()` if number of underlying scalars mismatch.
+ */
 #define RAI_TENSOR_RESHAPE(t, ...) rai__tensor_reshape(t, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
+
 #define RAI_TENSOR_RESHAPE_LIKE(t, like_t) rai__tensor_reshape(t, (like_t).rank, (like_t).dims + RAI__TENSOR_MAXRANK - (like_t).rank)
 #define RAI_TENSOR_SUBTENSOR(t, ...) rai__tensor_subtensor(t, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 RaiTensor rai_tensor_transpose(RaiTensor t, size_t axis_a, size_t axis_b);
+
+#endif // RAI__DIR_VIEW_OPERATIONS
 
 // Binary Operations
 RaiTensor rai_tensor_add(RaiArena* arena, RaiTensor a, RaiTensor b);
@@ -524,6 +535,7 @@ RaiTensor rai_tensor_silu_grad(RaiArena* arena, RaiTensor d_out, RaiTensor in);
 RaiTensor rai_tensor_softmax_grad(RaiArena* arena, RaiTensor d_out, RaiTensor probs);
 RaiTensor rai_tensor_rope_grad(RaiArena* arena, RaiTensor d_out, unsigned long start_idx, float theta_scale);
 
+#endif // RAI__DIR_TENSORS
 // ------------------------- MLP API ---------------------------------
 typedef struct {
 	RaiTensor weight;

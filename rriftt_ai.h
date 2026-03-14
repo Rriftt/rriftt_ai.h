@@ -133,7 +133,20 @@ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/** docs/usage_guide.md
+#ifndef RAI__H
+#define RAI__H
+#define RAI__DIR_DOCS
+#ifdef RAI__DIR_DOCS
+
+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
+#error rriftt_ai.h requires at least C23. Please compile with -std=c2x or -std=c23.
+#endif
+
+#ifdef __cplusplus
+#error rriftt_ai.h does NOT lower its standards.
+#endif // __cplusplus
+
+/** usage_guide.md
 ## Overview
 
 `rriftt_ai.h` is a dependency-free, single-header C library for building, training,
@@ -173,18 +186,7 @@ library adheres to the following conventions:
 - **Macros**: `SCREAMING_SNAKE_CASE` with `RAI_` prefix(e.g., `RAI_ASSERT`) 
 */
 
-#ifndef RAI__H
-#define RAI__H
-
-#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
-#error rriftt_ai.h requires at least C23. Please compile with -std=c2x or -std=c23.
-#endif
-
-#ifdef __cplusplus
-#error rriftt_ai.h does NOT lower its standards.
-#endif // __cplusplus
-
-/** docs/libc_overrides.md
+/** libc_overrides.md
 `rriftt_ai.h` does not depend on C libc at all. Hence the unconditional `#includes`s are only `<stddef.h>`, `<stdint.h>` and so on, aka those that must come with any standard-compliant C compiler as per the C23 standard.
 However, `rriftt_ai.h` does need memory allocations, math operations, assertions and so on. For these `rriftt_ai.h` uses libc out of the box, but wraps them in override macros. For example:
 
@@ -301,7 +303,7 @@ Please see this section of the header for all overrideable libc dependencies. Yo
 #define RAI_INFINITY INFINITY
 #endif // RAI_INFINITY
 
-/** docs/module_exclusion.md
+/** module_exclusion.md
 You can exclude any module by #defining `RAI_NO_<MODULE_NAME>` before #including `rriftt_ai.h`:
 
 ```c
@@ -332,9 +334,6 @@ But be aware, these modules are interdependent.
 #ifndef RAI_NO_LOGGERS
 #define RAI__DIR_LOGGERS
 #endif // RAI_NO_LOGGERS
-
-#define RAI__DIR_DOCS
-#ifdef RAI__DIR_DOCS
 
 #ifdef RAI__DIR_MATH
 
@@ -478,8 +477,6 @@ void rai_tensor_info(RaiTensor t);
 #endif // RAI__DIR_ALLOCATORS
 
 #endif // RAI__DIR_TENSORS
-
-#endif // RAI__DIR_DOCS
 
 // View operations
 #define RAI_TENSOR_RESHAPE(t, ...) rai__tensor_reshape(t, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
@@ -817,6 +814,8 @@ RaiString rai_tokenizer_decode(
 	RaiTokenizer tok,
 	RaiTokenArray tokens
 );
+
+#endif // RAI__DIR_DOCS
 #endif // RAI__H
 
 #ifdef RAI__DIR_EXAMPLES

@@ -3091,7 +3091,7 @@ RaiMlpLayer rai_mlp_layer_alloc_randn(RaiArena* arena, size_t num_inputs, size_t
 
 	float std_dev = 1.0f / RAI_SQRTF((float)num_inputs);
 	layer.weight = RAI_TENSOR_ALLOC_RANDN(arena, 0.0f, std_dev, num_outputs, num_inputs);
-	layer.bias = RAI_TENSOR_ALLOC_RANDN(arena, 0.0f, std_dev, num_outputs);
+	layer.bias = RAI_TENSOR_ALLOC_FILL(arena, 0.0f, num_outputs);
 
 	return layer;
 }

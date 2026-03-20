@@ -489,8 +489,25 @@ void rai_tensor_info(RaiTensor t);
  */
 #define RAI_TENSOR_RESHAPE(t, ...) rai__tensor_reshape(t, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
 
+/**
+ * Reshapes the given tensor `t` to the shape of the tensor `like_t`.
+ * This is a view operation. No memory is copied.
+ * Fails via `RAI_ASSERT()` if number of underlying scalars mismatch.
+ */
 #define RAI_TENSOR_RESHAPE_LIKE(t, like_t) rai__tensor_reshape(t, (like_t).rank, (like_t).dims + RAI__TENSOR_MAXRANK - (like_t).rank)
+
+/**
+ * Returns a handle to the subtensor of the given tensor at the specified index (or indeces).
+ * This is a view operation. No memory is copied.
+ * Usage: `RAI_TENSOR_SUBTENSOR(t, 2, 1)` applied on a $$3$$x$$2$$x$$2$$ tensor returns a vector of shape $$2$$ at index (2, 1) of the tensor `t`.
+ * Fails via `RAI_ASSERT()` in case of index being out of bounds.
+ */
 #define RAI_TENSOR_SUBTENSOR(t, ...) rai__tensor_subtensor(t, RAI__NULL_TERMINATED_ARRAY_LEN(__VA_ARGS__), RAI__NULL_TERMINATED_ARRAY(__VA_ARGS__))
+
+/**
+ * Returns a transposed handle to the tensor `t`. The axes referred to by `axis_a` and `axis_b` are transposed.
+ * Fails via `RAI_ASSERT()` if the axes are out of bounds.
+ */
 RaiTensor rai_tensor_transpose(RaiTensor t, size_t axis_a, size_t axis_b);
 
 #endif // RAI__DIR_VIEW_OPERATIONS
